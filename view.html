@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Menu - Foodie</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fefefe;
+        }
+        .menu-container {
+            padding: 30px;
+            max-width: 1200px;
+            margin: auto;
+        }
+        .menu-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        .menu-card {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+        .menu-card:hover {
+            transform: scale(1.03);
+        }
+        .menu-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+        .menu-content {
+            padding: 15px;
+        }
+        .menu-content h3 {
+            margin: 0 0 10px;
+            font-size: 20px;
+        }
+        .menu-content p {
+            font-size: 14px;
+            color: #555;
+        }
+        .price {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="menu-container">
+        <h1 class="menu-title">Our Delicious Menu</h1>
+        <div class="menu-grid">
+            <div class="menu-card">
+                <img src="https://t3.ftcdn.net/jpg/06/12/42/50/360_F_612425060_FeZ7qqUNup8R1BvoVoox6zZWmd69QXuA.jpg" alt="Hamburger">
+                <div class="menu-content">
+                    <h3>Classic Hamburger</h3>
+                    <p>Juicy grilled beef patty with cheese, lettuce, tomato & onion.</p>
+                    <div class="price">$6.99</div>
+                </div>
+            </div>
+
+            <div class="menu-card">
+                <img src="https://i.pinimg.com/originals/26/30/c0/2630c08254ad550c34f2b42a1e4e0750.png" alt="Pizza">
+                <div class="menu-content">
+                    <h3>Margherita Pizza</h3>
+                    <p>Fresh mozzarella, tomato sauce, and basil on a crispy crust.</p>
+                    <div class="price">$8.49</div>
+                </div>
+            </div>
+
+            <div class="menu-card">
+                <img src="https://s.lightorangebean.com/media/20240914160809/Spicy-Penne-Pasta_-done.png" alt="Pasta">
+                <div class="menu-content">
+                    <h3>Creamy Alfredo Pasta</h3>
+                    <p>Rich Alfredo sauce tossed with fettuccine and grilled chicken.</p>
+                    <div class="price">$9.25</div>
+                </div>
+            </div>
+
+            <div class="menu-card">
+                <img src="https://recipesblob.oetker.in/assets/f7ea4ac65c534c1492d156dfac9db2ad/1272x764/sandwichetojpg.webp" alt="Sandwich">
+                <div class="menu-content">
+                    <h3>Grilled Chicken Sandwich</h3>
+                    <p>Grilled chicken breast with mayo, lettuce, and pickles on brioche.</p>
+                    <div class="price">$5.75</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
