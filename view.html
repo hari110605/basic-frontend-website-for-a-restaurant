@@ -5,97 +5,372 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Menu - Foodie</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #fefefe;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            line-height: 1.6;
+            overflow-x: hidden;
         }
         .menu-container {
-            padding: 30px;
-            max-width: 1200px;
+            padding: 60px 40px;
+            max-width: 1400px;
             margin: auto;
+            position: relative;
         }
-        .menu-title {
+
+        .menu-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(228, 81, 78, 0.03) 0%, transparent 70%);
+            animation: float 8s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        .menu-header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 60px;
+            position: relative;
         }
+
+        .menu-title {
+            font-size: 48px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+            position: relative;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .menu-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #e4514e, #ff6b68);
+            border-radius: 2px;
+            animation: expandWidth 1.5s ease-out 0.5s both;
+        }
+
+        .menu-subtitle {
+            font-size: 18px;
+            color: #666;
+            font-weight: 400;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+            animation: fadeInUp 1s ease-out 0.4s both;
         }
         .menu-card {
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            transition: transform 0.2s ease;
+            transition: all 0.4s ease;
+            position: relative;
+            border: 1px solid rgba(228, 81, 78, 0.1);
         }
+
+        .menu-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #e4514e, #ff6b68);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
         .menu-card:hover {
-            transform: scale(1.03);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(228, 81, 78, 0.15);
+        }
+
+        .menu-card:hover::before {
+            transform: scaleX(1);
         }
         .menu-card img {
             width: 100%;
-            height: 180px;
+            height: 220px;
             object-fit: cover;
+            transition: all 0.4s ease;
         }
+
+        .menu-card:hover img {
+            transform: scale(1.1);
+        }
+
         .menu-content {
-            padding: 15px;
+            padding: 25px;
+            position: relative;
         }
+
         .menu-content h3 {
-            margin: 0 0 10px;
-            font-size: 20px;
+            margin: 0 0 12px;
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            transition: color 0.3s ease;
         }
+
+        .menu-card:hover .menu-content h3 {
+            color: #e4514e;
+        }
+
         .menu-content p {
-            font-size: 14px;
-            color: #555;
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-weight: 400;
         }
+
         .price {
-            font-weight: bold;
-            margin-top: 10px;
+            font-weight: 700;
+            font-size: 20px;
+            color: #e4514e;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .price::before {
+            content: '💰';
+            font-size: 16px;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 100px;
+            left: 40px;
+            background: linear-gradient(135deg, #e4514e 0%, #ff6b68 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(228, 81, 78, 0.3);
+            z-index: 1000;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(228, 81, 78, 0.4);
+        }
+
+        .back-button::before {
+            content: '←';
+            font-size: 18px;
+        }
+
+        /* Logo link styling */
+        .logo a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .logo a:hover {
+            text-decoration: none;
+        }
+
+        /* Active navigation state */
+        .nav-links li a.active {
+            color: #e4514e;
+            background-color: rgba(228, 81, 78, 0.1);
+        }
+
+        .nav-links li a.active::before {
+            width: 80%;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes expandWidth {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100px;
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-15px) rotate(3deg);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .menu-container {
+                padding: 40px 20px;
+            }
+
+            .menu-title {
+                font-size: 36px;
+            }
+
+            .menu-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .back-button {
+                top: 80px;
+                left: 20px;
+                padding: 10px 16px;
+                font-size: 14px;
+            }
+
+            .menu-card img {
+                height: 200px;
+            }
+
+            .menu-content {
+                padding: 20px;
+            }
+
+            .menu-content h3 {
+                font-size: 20px;
+            }
+
+            .menu-content p {
+                font-size: 14px;
+            }
+
+            .price {
+                font-size: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .menu-title {
+                font-size: 28px;
+            }
+
+            .menu-subtitle {
+                font-size: 16px;
+            }
+
+            .menu-card img {
+                height: 180px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Navigation Bar -->
+    <nav class="menu">
+        <div class="logo">
+            <a href="index.html"><h3>Foodie</h3></a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="view.html" class="active">Menu</a></li>
+            <li><a href="">Our Deal</a></li>
+            <li><a href="">Categories</a></li>
+            <li><a href="">Restaurants</a></li>
+        </ul>
+    </nav>
+
+    <!-- Back Button -->
+    <a href="index.html" class="back-button">Back to Home</a>
 
     <div class="menu-container">
-        <h1 class="menu-title">Our Delicious Menu</h1>
+        <div class="menu-header">
+            <h1 class="menu-title">Our Delicious Menu</h1>
+            <p class="menu-subtitle">Discover our carefully crafted dishes made with the finest ingredients</p>
+        </div>
         <div class="menu-grid">
             <div class="menu-card">
-                <img src="https://t3.ftcdn.net/jpg/06/12/42/50/360_F_612425060_FeZ7qqUNup8R1BvoVoox6zZWmd69QXuA.jpg" alt="Hamburger">
+                <img src="https://t3.ftcdn.net/jpg/06/12/42/50/360_F_612425060_FeZ7qqUNup8R1BvoVoox6zZWmd69QXuA.jpg" alt="Classic Hamburger">
                 <div class="menu-content">
                     <h3>Classic Hamburger</h3>
-                    <p>Juicy grilled beef patty with cheese, lettuce, tomato & onion.</p>
+                    <p>Juicy grilled beef patty with melted cheese, fresh lettuce, ripe tomato, and caramelized onions on a toasted brioche bun.</p>
                     <div class="price">$6.99</div>
                 </div>
             </div>
 
             <div class="menu-card">
-                <img src="https://i.pinimg.com/originals/26/30/c0/2630c08254ad550c34f2b42a1e4e0750.png" alt="Pizza">
+                <img src="https://i0.wp.com/cookingitalians.com/wp-content/uploads/2024/11/Margherita-Pizza.jpg?fit=1344%2C768&ssl=1" alt="Margherita Pizza">
                 <div class="menu-content">
                     <h3>Margherita Pizza</h3>
-                    <p>Fresh mozzarella, tomato sauce, and basil on a crispy crust.</p>
+                    <p>Authentic Italian pizza with fresh mozzarella, San Marzano tomato sauce, and aromatic basil leaves on our signature crispy crust.</p>
                     <div class="price">$8.49</div>
                 </div>
             </div>
 
             <div class="menu-card">
-                <img src="https://s.lightorangebean.com/media/20240914160809/Spicy-Penne-Pasta_-done.png" alt="Pasta">
+                <img src="https://s.lightorangebean.com/media/20240914160809/Spicy-Penne-Pasta_-done.png" alt="Creamy Alfredo Pasta">
                 <div class="menu-content">
                     <h3>Creamy Alfredo Pasta</h3>
-                    <p>Rich Alfredo sauce tossed with fettuccine and grilled chicken.</p>
+                    <p>Rich and creamy Alfredo sauce tossed with perfectly cooked fettuccine and tender grilled chicken breast, topped with fresh parmesan.</p>
                     <div class="price">$9.25</div>
                 </div>
             </div>
 
             <div class="menu-card">
-                <img src="https://recipesblob.oetker.in/assets/f7ea4ac65c534c1492d156dfac9db2ad/1272x764/sandwichetojpg.webp" alt="Sandwich">
+                <img src="https://recipesblob.oetker.in/assets/f7ea4ac65c534c1492d156dfac9db2ad/1272x764/sandwichetojpg.webp" alt="Grilled Chicken Sandwich">
                 <div class="menu-content">
                     <h3>Grilled Chicken Sandwich</h3>
-                    <p>Grilled chicken breast with mayo, lettuce, and pickles on brioche.</p>
+                    <p>Perfectly seasoned grilled chicken breast with creamy mayo, crisp lettuce, and tangy pickles served on a fresh brioche bun.</p>
                     <div class="price">$5.75</div>
+                </div>
+            </div>
+
+            <div class="menu-card">
+                <img src="https://static01.nyt.com/images/2024/09/10/multimedia/JG-Parmesan-Crusted-Salmon-Caesar-Saladrex-kjpb/JG-Parmesan-Crusted-Salmon-Caesar-Saladrex-kjpb-master768.jpg?quality=75&auto=webp" alt="Caesar Salad">
+                <div class="menu-content">
+                    <h3>Caesar Salad</h3>
+                    <p>Fresh romaine lettuce tossed with our house-made Caesar dressing, parmesan cheese, and crispy croutons.</p>
+                    <div class="price">$7.99</div>
+                </div>
+            </div>
+
+            <div class="menu-card">
+                <img src="images/pepperoni.jpg" alt="Pepperoni Pizza">
+                <div class="menu-content">
+                    <h3>Pepperoni Pizza</h3>
+                    <p>Classic pepperoni pizza with mozzarella cheese and our signature tomato sauce on a hand-tossed crust.</p>
+                    <div class="price">$9.99</div>
                 </div>
             </div>
         </div>
