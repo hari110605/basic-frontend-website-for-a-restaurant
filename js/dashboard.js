@@ -195,29 +195,38 @@ function renderProfileInfo(profile) {
 // ===============================================================================
 
 function showReviewModal(orderId, orderInfo = null) {
-  // Check if the new ReviewWidget is available
-  if (typeof window.showReviewModal !== 'undefined' && window.ReviewWidget) {
-    // Use the new review widget modal
-    window.showReviewModal(orderId, orderInfo, {
-      onSuccess: (response) => {
-        loadUserOrders(); // Reload orders to update review status
-        showNotification('Thank you! Your review has been submitted successfully.', 'success');
-      },
-      onError: (error, message) => {
-        showNotification(message, 'error');
-      }
-    });
-    return;
-  }
-
-  // Fallback to existing modal
+  // Use the enhanced modal directly
   const modal = document.getElementById('reviewModal');
   const orderIdInput = document.getElementById('reviewOrderId');
 
   if (modal && orderIdInput) {
     orderIdInput.value = orderId;
+
+    // Show order info if available
+    if (orderInfo) {
+      updateReviewModalOrderInfo(orderInfo);
+    }
+
     modal.style.display = 'block';
-    resetStarRating();
+    resetEnhancedStarRating();
+    resetEnhancedTextarea();
+  }
+}
+
+function updateReviewModalOrderInfo(orderInfo) {
+  const orderInfoSection = document.getElementById('reviewOrderInfo');
+  const orderIdDisplay = document.getElementById('displayOrderId');
+  const orderDateDisplay = document.getElementById('displayOrderDate');
+  const orderTotalDisplay = document.getElementById('displayOrderTotal');
+  const orderStatusDisplay = document.getElementById('displayOrderStatus');
+
+  if (orderInfoSection && orderInfo) {
+    orderInfoSection.style.display = 'block';
+
+    if (orderIdDisplay) orderIdDisplay.textContent = `#${orderInfo.id}`;
+    if (orderDateDisplay) orderDateDisplay.textContent = orderInfo.order_date ? new Date(orderInfo.order_date).toLocaleDateString() : '---';
+    if (orderTotalDisplay) orderTotalDisplay.textContent = orderInfo.total_amount ? `$${orderInfo.total_amount}` : '---';
+    if (orderStatusDisplay) orderStatusDisplay.textContent = orderInfo.status || '---';
   }
 }
 
@@ -230,14 +239,19 @@ function hideReviewModal() {
 }
 
 function clearReviewForm() {
-  // Use the new reset function if available
-  if (typeof resetReviewModal === 'function') {
-    resetReviewModal();
-  } else {
-    // Fallback to old method
-    const form = document.getElementById('reviewForm');
-    if (form) form.reset();
-    resetStarRating();
+  // Reset the form
+  const form = document.getElementById('reviewForm');
+  if (form) form.reset();
+
+  // Reset both star rating systems
+  resetStarRating();
+  resetEnhancedStarRating();
+  resetEnhancedTextarea();
+
+  // Hide order info section
+  const orderInfoSection = document.getElementById('reviewOrderInfo');
+  if (orderInfoSection) {
+    orderInfoSection.style.display = 'none';
   }
 }
 
@@ -247,6 +261,38 @@ function resetStarRating() {
   stars.forEach(star => {
     star.style.opacity = '0.3';
   });
+}
+
+// Enhanced star rating functions
+function resetEnhancedStarRating() {
+  selectedRating = 0;
+  document.getElementById('reviewStars').value = '';
+
+  // Reset enhanced visual state
+  document.querySelectorAll('.enhanced-star').forEach(star => {
+    star.classList.remove('active');
+  });
+
+  // Reset enhanced description
+  const description = document.getElementById('enhancedRatingDescription');
+  if (description) {
+    description.textContent = 'Click stars to rate your experience';
+    description.classList.remove('selected');
+  }
+}
+
+function resetEnhancedTextarea() {
+  const textarea = document.getElementById('reviewDescription');
+  const charCount = document.getElementById('enhancedCharCount');
+
+  if (textarea) {
+    textarea.value = '';
+  }
+
+  if (charCount) {
+    charCount.textContent = '0';
+    charCount.parentElement.className = 'enhanced-character-count';
+  }
 }
 
 function setStarRating(rating) {
@@ -344,22 +390,118 @@ function checkDashboardAuth() {
   return true;
 }
 
+// Enhanced character count function
+function updateEnhancedCharacterCount(textarea) {
+  const charCount = document.getElementById('enhancedCharCount');
+  if (!charCount) return;
+
+  const countContainer = charCount.parentElement;
+  const length = textarea.value.length;
+
+  charCount.textContent = length;
+
+  // Reset classes
+  countContainer.className = 'enhanced-character-count';
+
+  // Add appropriate class based on length
+  if (length < 10) {
+    countContainer.classList.add('error');
+  } else if (length > 450) {
+    countContainer.classList.add('warning');
+  }
+}
+
+// Enhanced star rating functions
+function initializeEnhancedStarRating() {
+  const ratingDescriptions = {
+    0: "Click stars to rate your experience",
+    1: "😞 Poor - Very disappointed",
+    2: "😐 Fair - Below expectations",
+    3: "🙂 Good - Met expectations",
+    4: "😊 Very Good - Exceeded expectations",
+    5: "🤩 Excellent - Outstanding experience!"
+  };
+
+  const stars = document.querySelectorAll('.enhanced-star');
+  const ratingDescription = document.getElementById('enhancedRatingDescription');
+
+  stars.forEach((star, index) => {
+    star.addEventListener('click', () => {
+      setEnhancedStarRating(index + 1);
+    });
+
+    star.addEventListener('mouseenter', () => {
+      highlightEnhancedStars(index + 1);
+      if (ratingDescription) {
+        ratingDescription.textContent = ratingDescriptions[index + 1];
+        ratingDescription.classList.add('selected');
+      }
+    });
+  });
+
+  const starContainer = document.getElementById('enhancedStarRating');
+  if (starContainer) {
+    starContainer.addEventListener('mouseleave', () => {
+      highlightEnhancedStars(selectedRating);
+      if (ratingDescription) {
+        ratingDescription.textContent = ratingDescriptions[selectedRating];
+        if (selectedRating === 0) {
+          ratingDescription.classList.remove('selected');
+        }
+      }
+    });
+  }
+}
+
+function setEnhancedStarRating(rating) {
+  selectedRating = rating;
+  document.getElementById('reviewStars').value = rating;
+  highlightEnhancedStars(rating);
+
+  const ratingDescription = document.getElementById('enhancedRatingDescription');
+  if (ratingDescription) {
+    const descriptions = {
+      1: "😞 Poor - Very disappointed",
+      2: "😐 Fair - Below expectations",
+      3: "🙂 Good - Met expectations",
+      4: "😊 Very Good - Exceeded expectations",
+      5: "🤩 Excellent - Outstanding experience!"
+    };
+    ratingDescription.textContent = descriptions[rating];
+    ratingDescription.classList.add('selected');
+  }
+}
+
+function highlightEnhancedStars(rating) {
+  const stars = document.querySelectorAll('.enhanced-star');
+  stars.forEach((star, index) => {
+    if (index < rating) {
+      star.classList.add('active');
+    } else {
+      star.classList.remove('active');
+    }
+  });
+}
+
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', () => {
   if (!checkDashboardAuth()) return;
-  
+
   // Setup star rating click handlers
   const stars = document.querySelectorAll('.star');
   stars.forEach((star, index) => {
     star.addEventListener('click', () => setStarRating(index + 1));
   });
-  
+
+  // Setup enhanced star rating
+  initializeEnhancedStarRating();
+
   // Setup review form handler
   const reviewForm = document.getElementById('reviewForm');
   if (reviewForm) {
     reviewForm.addEventListener('submit', handleReviewSubmission);
   }
-  
+
   // Load initial tab (orders)
   loadUserOrders();
 });

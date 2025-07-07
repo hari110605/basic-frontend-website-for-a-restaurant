@@ -147,12 +147,26 @@ class ReviewWidget {
     styles.id = 'reviewWidgetStyles';
     styles.textContent = `
       .review-widget {
-        background: white;
-        border-radius: 12px;
-        padding: 25px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        background: linear-gradient(135deg, #ffffff, #f8f9fa);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.12);
         margin: 20px 0;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        border: 1px solid rgba(228, 81, 78, 0.1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .review-widget::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #e4514e, #ff6b68, #e4514e);
+        border-radius: 20px 20px 0 0;
       }
 
       .review-widget-header {
@@ -218,35 +232,60 @@ class ReviewWidget {
 
       .widget-star-rating {
         display: flex;
-        gap: 6px;
+        gap: 10px;
         justify-content: center;
-        margin: 15px 0;
+        margin: 20px 0;
+        padding: 20px;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 15px;
+        border: 1px solid #dee2e6;
       }
 
       .widget-star {
-        font-size: 32px;
+        font-size: 36px;
         cursor: pointer;
-        transition: all 0.2s ease;
-        filter: grayscale(100%);
-        opacity: 0.5;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        filter: grayscale(100%) brightness(0.7);
+        opacity: 0.4;
         user-select: none;
+        position: relative;
+        transform-origin: center;
       }
 
       .widget-star:hover,
       .widget-star.active {
-        filter: grayscale(0%);
+        filter: grayscale(0%) brightness(1.1);
         opacity: 1;
-        transform: scale(1.1);
+        transform: scale(1.2);
+        text-shadow: 0 0 20px rgba(255, 193, 7, 0.6);
       }
 
       .widget-star.active {
-        animation: widgetStarPulse 0.3s ease;
+        animation: widgetStarPulse 0.5s ease;
+      }
+
+      .widget-star.active::after {
+        content: '';
+        position: absolute;
+        top: -4px;
+        left: -4px;
+        right: -4px;
+        bottom: -4px;
+        background: radial-gradient(circle, rgba(255, 193, 7, 0.3), transparent);
+        border-radius: 50%;
+        z-index: -1;
+        animation: starGlow 1s ease infinite alternate;
       }
 
       @keyframes widgetStarPulse {
-        0% { transform: scale(1.1); }
-        50% { transform: scale(1.25); }
-        100% { transform: scale(1.1); }
+        0% { transform: scale(1.2); }
+        50% { transform: scale(1.4); }
+        100% { transform: scale(1.2); }
+      }
+
+      @keyframes starGlow {
+        0% { opacity: 0.3; }
+        100% { opacity: 0.7; }
       }
 
       .widget-rating-description {
@@ -315,36 +354,59 @@ class ReviewWidget {
       }
 
       .widget-btn {
-        padding: 10px 24px;
+        padding: 14px 28px;
         border: none;
-        border-radius: 6px;
-        font-size: 14px;
+        border-radius: 12px;
+        font-size: 15px;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         text-decoration: none;
         display: inline-block;
         text-align: center;
+        position: relative;
+        overflow: hidden;
+        letter-spacing: 0.5px;
+        border: 2px solid transparent;
+      }
+
+      .widget-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.6s ease;
+      }
+
+      .widget-btn:hover::before {
+        left: 100%;
       }
 
       .widget-btn-primary {
-        background: #e4514e;
+        background: linear-gradient(135deg, #e4514e, #ff6b68);
         color: white;
+        box-shadow: 0 4px 15px rgba(228, 81, 78, 0.2);
       }
 
       .widget-btn-primary:hover:not(:disabled) {
-        background: #d63384;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(228, 81, 78, 0.3);
+        background: linear-gradient(135deg, #ff6b68, #e4514e);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(228, 81, 78, 0.4);
       }
 
       .widget-btn-secondary {
-        background: #6c757d;
+        background: linear-gradient(135deg, #6c757d, #868e96);
         color: white;
+        box-shadow: 0 4px 15px rgba(108, 117, 125, 0.2);
       }
 
       .widget-btn-secondary:hover {
-        background: #5a6268;
+        background: linear-gradient(135deg, #5a6268, #6c757d);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
       }
 
       .widget-btn:disabled {

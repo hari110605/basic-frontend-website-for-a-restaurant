@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Foodie</title>
+    <title>Foodie Restaurant</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="responsive-utils.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -377,7 +378,7 @@
     <!-- Navigation Bar -->
     <nav class="menu">
         <div class="logo">
-            <a href="index.html"><h3>Foodie</h3></a>
+            <a href="index.html" style="text-decoration: none; color: inherit;"><h3>Foodie</h3></a>
         </div>
 
         <!-- Mobile Menu Toggle -->
@@ -448,45 +449,80 @@
         </div>
     </div>
 
-    <!-- Review Modal -->
+    <!-- Enhanced Review Modal -->
     <div id="reviewModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="hideReviewModal()">&times;</span>
-            <h2>Write a Review</h2>
-            <p style="color: #666; margin-bottom: 20px;">Share your experience with this order to help other customers</p>
+            <div class="review-modal-header">
+                <h2>📝 Write a Review</h2>
+                <p>Share your experience with this order to help other customers make informed decisions</p>
+            </div>
+
+            <div class="order-info-section" id="reviewOrderInfo" style="display: none;">
+                <h3>Order Details</h3>
+                <div class="order-details-grid">
+                    <div class="order-detail-item">
+                        <span class="detail-label">Order ID:</span>
+                        <span class="detail-value" id="displayOrderId">#---</span>
+                    </div>
+                    <div class="order-detail-item">
+                        <span class="detail-label">Date:</span>
+                        <span class="detail-value" id="displayOrderDate">---</span>
+                    </div>
+                    <div class="order-detail-item">
+                        <span class="detail-label">Total:</span>
+                        <span class="detail-value" id="displayOrderTotal">---</span>
+                    </div>
+                    <div class="order-detail-item">
+                        <span class="detail-label">Status:</span>
+                        <span class="detail-value" id="displayOrderStatus">---</span>
+                    </div>
+                </div>
+            </div>
+
             <form id="reviewForm">
                 <input type="hidden" id="reviewOrderId" name="order_id">
-                <div class="review-form-group">
-                    <label class="rating-label">
-                        How would you rate your experience?
-                        <span class="rating-description" id="ratingDescription">Click stars to rate</span>
-                    </label>
-                    <div class="star-rating">
-                        <span class="star" data-rating="1">⭐</span>
-                        <span class="star" data-rating="2">⭐</span>
-                        <span class="star" data-rating="3">⭐</span>
-                        <span class="star" data-rating="4">⭐</span>
-                        <span class="star" data-rating="5">⭐</span>
+
+                <!-- Enhanced Star Rating Section -->
+                <div class="enhanced-rating-section">
+                    <label class="enhanced-rating-label">How would you rate your experience?</label>
+                    <div class="enhanced-star-rating" id="enhancedStarRating">
+                        <span class="enhanced-star" data-rating="1">⭐</span>
+                        <span class="enhanced-star" data-rating="2">⭐</span>
+                        <span class="enhanced-star" data-rating="3">⭐</span>
+                        <span class="enhanced-star" data-rating="4">⭐</span>
+                        <span class="enhanced-star" data-rating="5">⭐</span>
+                    </div>
+                    <div class="enhanced-rating-description" id="enhancedRatingDescription">
+                        Click stars to rate your experience
                     </div>
                     <input type="hidden" id="reviewStars" name="stars" required>
                 </div>
-                <div class="review-form-group">
+
+                <!-- Enhanced Textarea Section -->
+                <div class="enhanced-textarea-section">
                     <label for="reviewDescription">Tell us about your experience:</label>
                     <textarea
                         id="reviewDescription"
                         name="description"
-                        rows="4"
+                        rows="5"
                         required
-                        placeholder="What did you think of the food, service, and overall experience? (minimum 10 characters)"
-                        class="review-textarea"
+                        placeholder="What did you think of the food, service, and overall experience? Please be specific and helpful to other customers."
+                        class="enhanced-review-textarea"
                         maxlength="500"
-                        oninput="updateCharacterCount(this)">
+                        minlength="10"
+                        oninput="updateEnhancedCharacterCount(this)">
                     </textarea>
-                    <div class="character-count">
-                        <span id="charCount">0</span>/500 characters (minimum 10)
+                    <div class="enhanced-character-count">
+                        <span id="enhancedCharCount">0</span>/500 characters (minimum 10)
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Submit Review</button>
+
+                <!-- Enhanced Action Buttons -->
+                <div class="enhanced-review-actions">
+                    <button type="button" class="btn btn-secondary" onclick="hideReviewModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="enhancedSubmitBtn">Submit Review</button>
+                </div>
             </form>
         </div>
     </div>

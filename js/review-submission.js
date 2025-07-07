@@ -101,12 +101,12 @@ function addReviewWithModal(orderId, options = {}) {
 
   currentReviewOrderId = orderId;
   currentReviewRating = 0;
-  
-  // Show review modal
-  showReviewModal(orderId);
-  
-  // Pre-fill order information if available
-  if (options.orderInfo) {
+
+  // Show review modal with order info
+  showReviewModal(orderId, options.orderInfo);
+
+  // Pre-fill order information if available (fallback)
+  if (options.orderInfo && typeof updateReviewModalWithOrderInfo === 'function') {
     updateReviewModalWithOrderInfo(options.orderInfo);
   }
 }
@@ -284,9 +284,9 @@ function getReviewButtonHTML(order) {
   if (!canReviewOrder(order)) {
     return '';
   }
-  
+
   return `
-    <button class="review-button" onclick="addReviewWithModal(${order.id}, {orderInfo: ${JSON.stringify(order).replace(/"/g, '&quot;')}})">
+    <button class="review-button" onclick="showReviewModal(${order.id}, ${JSON.stringify(order).replace(/"/g, '&quot;')})">
       Write Review
     </button>
   `;
