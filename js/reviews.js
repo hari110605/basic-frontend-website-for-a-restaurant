@@ -376,6 +376,10 @@ function showWriteReviewOptions() {
 function showOrderSelectionModal() {
   const modal = document.getElementById('orderSelectionModal');
   if (modal) {
+    // Reset selection when opening modal
+    selectedOrderForReview = null;
+    updateSelectOrderButton();
+
     modal.style.display = 'block';
     loadReviewableOrders();
   }
@@ -386,8 +390,12 @@ function hideOrderSelectionModal() {
   const modal = document.getElementById('orderSelectionModal');
   if (modal) {
     modal.style.display = 'none';
-    selectedOrderForReview = null;
-    updateSelectOrderButton();
+    // Don't reset selectedOrderForReview immediately to avoid timing issues
+    // Reset it after a short delay or when showing the modal again
+    setTimeout(() => {
+      selectedOrderForReview = null;
+      updateSelectOrderButton();
+    }, 100);
   }
 }
 
@@ -482,7 +490,17 @@ function createSelectableOrderHTML(order) {
 
 // Select order for review
 function selectOrderForReview(orderId) {
+  console.log('selectOrderForReview called with orderId:', orderId);
+  console.log('Available reviewableOrders:', reviewableOrders);
+
   selectedOrderForReview = reviewableOrders.find(order => order.id === orderId);
+  console.log('Selected order:', selectedOrderForReview);
+
+  if (!selectedOrderForReview) {
+    console.error('Order not found in reviewableOrders array');
+    showNotification('Error selecting order. Please try again.', 'error');
+    return;
+  }
 
   // Update visual selection
   document.querySelectorAll('.order-item-selectable').forEach(item => {
@@ -510,16 +528,46 @@ function updateSelectOrderButton() {
 
 // Proceed with selected order
 function proceedWithSelectedOrder() {
+  console.log('proceedWithSelectedOrder called, selectedOrderForReview:', selectedOrderForReview);
+
   if (!selectedOrderForReview) {
     showNotification('Please select an order to review', 'warning');
     return;
   }
 
+  // Store the order info before hiding modal
+  const orderToReview = selectedOrderForReview;
+
   hideOrderSelectionModal();
 
-  // Use the review submission function
-  addReviewWithModal(selectedOrderForReview.id, {
-    orderInfo: selectedOrderForReview,
+  // Check if we have the new review widget available
+  if (typeof window.ReviewWidget !== 'undefined' && window.createReviewWidget) {
+    // Use the new review widget modal
+    try {
+      window.showReviewModal(orderToReview.id, orderToReview, {
+        onSuccess: (response) => {
+          loadAllReviews(); // Refresh reviews list
+          showNotification('Review submitted successfully! Thank you for your feedback.', 'success');
+        },
+        onError: (error, message) => {
+          showNotification(message, 'error');
+        }
+      });
+    } catch (error) {
+      console.error('Error with new review widget:', error);
+      // Fallback to existing method
+      fallbackToOldReview(orderToReview);
+    }
+  } else {
+    // Fallback to existing review submission function
+    fallbackToOldReview(orderToReview);
+  }
+}
+
+// Fallback function for old review method
+function fallbackToOldReview(orderToReview) {
+  addReviewWithModal(orderToReview.id, {
+    orderInfo: orderToReview,
     onSuccess: () => {
       // Refresh reviews list
       loadAllReviews();
@@ -678,6 +726,43 @@ if (typeof window !== 'undefined') {
   window.handleReviewSubmission = handleReviewSubmission;
 }
 
+// Direct review function that bypasses modal selection
+function directReviewOrder(orderId, orderInfo = null) {
+  console.log('directReviewOrder called with:', orderId, orderInfo);
+
+  if (!api.isAuthenticated()) {
+    showNotification('Please login to submit a review', 'warning');
+    return;
+  }
+
+  // Use the new review widget if available
+  if (typeof window.ReviewWidget !== 'undefined') {
+    try {
+      window.showReviewModal(orderId, orderInfo, {
+        onSuccess: (response) => {
+          loadAllReviews(); // Refresh reviews list
+          showNotification('Review submitted successfully! Thank you for your feedback.', 'success');
+        },
+        onError: (error, message) => {
+          showNotification(message, 'error');
+        }
+      });
+    } catch (error) {
+      console.error('Error with review widget:', error);
+      showNotification('Error opening review form. Please try again.', 'error');
+    }
+  } else {
+    // Fallback to existing method
+    addReviewWithModal(orderId, {
+      orderInfo: orderInfo,
+      onSuccess: () => {
+        loadAllReviews();
+        showNotification('Review submitted successfully! Thank you for your feedback.', 'success');
+      }
+    });
+  }
+}
+
 // Export functions for global access
 if (typeof window !== 'undefined') {
   window.loadAllReviews = loadAllReviews;
@@ -690,4 +775,5 @@ if (typeof window !== 'undefined') {
   window.loadReviewableOrders = loadReviewableOrders;
   window.selectOrderForReview = selectOrderForReview;
   window.proceedWithSelectedOrder = proceedWithSelectedOrder;
+  window.directReviewOrder = directReviewOrder;
 }

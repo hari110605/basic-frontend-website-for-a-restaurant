@@ -194,10 +194,26 @@ function renderProfileInfo(profile) {
 //                              REVIEW MANAGEMENT
 // ===============================================================================
 
-function showReviewModal(orderId) {
+function showReviewModal(orderId, orderInfo = null) {
+  // Check if the new ReviewWidget is available
+  if (typeof window.showReviewModal !== 'undefined' && window.ReviewWidget) {
+    // Use the new review widget modal
+    window.showReviewModal(orderId, orderInfo, {
+      onSuccess: (response) => {
+        loadUserOrders(); // Reload orders to update review status
+        showNotification('Thank you! Your review has been submitted successfully.', 'success');
+      },
+      onError: (error, message) => {
+        showNotification(message, 'error');
+      }
+    });
+    return;
+  }
+
+  // Fallback to existing modal
   const modal = document.getElementById('reviewModal');
   const orderIdInput = document.getElementById('reviewOrderId');
-  
+
   if (modal && orderIdInput) {
     orderIdInput.value = orderId;
     modal.style.display = 'block';

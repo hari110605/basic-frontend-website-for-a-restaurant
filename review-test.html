@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Test - Restaurant</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .test-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .test-header h1 {
+            color: #e4514e;
+            margin-bottom: 10px;
+        }
+
+        .auth-section {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .auth-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .auth-form input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .btn {
+            background: #e4514e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #d63384;
+        }
+
+        .btn.secondary {
+            background: #6c757d;
+        }
+
+        .btn.secondary:hover {
+            background: #5a6268;
+        }
+
+        .status-indicator {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+
+        .status-indicator.authenticated {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-indicator.not-authenticated {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .orders-section {
+            margin: 30px 0;
+        }
+
+        .order-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .order-id {
+            font-weight: 600;
+            color: #e4514e;
+            font-size: 18px;
+        }
+
+        .order-status {
+            background: #28a745;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .order-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .result-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .result-message.success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .result-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .result-message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .auth-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .auth-form input,
+            .auth-form button {
+                width: 100%;
+                margin: 5px 0;
+            }
+
+            .order-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🧪 Review System Test</h1>
+            <p>Test the review functionality with your delivered orders</p>
+        </div>
+
+        <!-- Authentication Section -->
+        <div class="auth-section">
+            <h3>🔐 Authentication</h3>
+            <div class="auth-form">
+                <input type="email" id="loginEmail" placeholder="Email" value="test@example.com">
+                <input type="password" id="loginPassword" placeholder="Password" value="password123">
+                <button class="btn" onclick="handleLogin()">Login</button>
+                <button class="btn secondary" onclick="handleLogout()">Logout</button>
+            </div>
+            
+            <div id="authStatus" class="status-indicator not-authenticated">
+                Not authenticated - Please login to submit reviews
+            </div>
+        </div>
+
+        <!-- Orders Section -->
+        <div class="orders-section">
+            <h3>📦 Your Delivered Orders</h3>
+            <button class="btn" onclick="loadUserOrders()">Load My Orders</button>
+            <div id="ordersContainer"></div>
+        </div>
+
+        <!-- Review Widget Container -->
+        <div id="reviewWidgetContainer"></div>
+
+        <!-- Results -->
+        <div id="resultMessage" class="result-message hidden"></div>
+    </div>
+
+    <!-- Include required scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/review-submission.js"></script>
+    <script src="js/review-widget.js"></script>
+
+    <script>
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAuthStatus();
+        });
+
+        // Authentication functions
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                await api.login(email, password);
+                updateAuthStatus();
+                showResult('Login successful!', 'success');
+                
+                // Auto-load orders after login
+                setTimeout(loadUserOrders, 1000);
+            } catch (error) {
+                showResult(`Login failed: ${error.message}`, 'error');
+            }
+        }
+
+        function handleLogout() {
+            api.logout();
+            updateAuthStatus();
+            document.getElementById('ordersContainer').innerHTML = '';
+            document.getElementById('reviewWidgetContainer').innerHTML = '';
+            showResult('Logged out successfully', 'info');
+        }
+
+        function updateAuthStatus() {
+            const statusDiv = document.getElementById('authStatus');
+            if (api.isAuthenticated()) {
+                statusDiv.textContent = 'Authenticated - Ready to submit reviews';
+                statusDiv.className = 'status-indicator authenticated';
+            } else {
+                statusDiv.textContent = 'Not authenticated - Please login to submit reviews';
+                statusDiv.className = 'status-indicator not-authenticated';
+            }
+        }
+
+        // Load user orders
+        async function loadUserOrders() {
+            if (!api.isAuthenticated()) {
+                showResult('Please login first', 'error');
+                return;
+            }
+
+            try {
+                showResult('Loading your orders...', 'info');
+                const orders = await api.getUserOrders();
+                console.log('Loaded orders:', orders);
+                
+                // Filter delivered orders
+                const deliveredOrders = orders.filter(order => order.status === 'delivered');
+                console.log('Delivered orders:', deliveredOrders);
+                
+                displayOrders(deliveredOrders);
+                
+                if (deliveredOrders.length === 0) {
+                    showResult('No delivered orders found to review', 'info');
+                } else {
+                    showResult(`Found ${deliveredOrders.length} delivered orders`, 'success');
+                }
+            } catch (error) {
+                console.error('Failed to load orders:', error);
+                showResult(`Failed to load orders: ${error.message}`, 'error');
+            }
+        }
+
+        function displayOrders(orders) {
+            const container = document.getElementById('ordersContainer');
+            
+            if (orders.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666;">No delivered orders found</p>';
+                return;
+            }
+
+            container.innerHTML = orders.map(order => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-id">Order #${order.id}</div>
+                        <div class="order-status">${order.status}</div>
+                    </div>
+                    <div class="order-details">
+                        <div><strong>Date:</strong> ${new Date(order.order_date).toLocaleDateString()}</div>
+                        <div><strong>Total:</strong> $${order.total_amount}</div>
+                        <div><strong>Items:</strong> ${order.order_items ? order.order_items.length : 'N/A'} items</div>
+                    </div>
+                    <button class="btn" onclick="reviewOrder(${order.id}, ${JSON.stringify(order).replace(/"/g, '&quot;')})">
+                        Write Review
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function reviewOrder(orderId, orderInfo) {
+            console.log('reviewOrder called with:', orderId, orderInfo);
+            
+            // Clear previous widget
+            document.getElementById('reviewWidgetContainer').innerHTML = '<div id="reviewWidget"></div>';
+            
+            // Create new review widget
+            try {
+                const widget = new ReviewWidget('reviewWidget', {
+                    orderId: orderId,
+                    orderInfo: orderInfo,
+                    showOrderInfo: true,
+                    onSuccess: (response) => {
+                        console.log('Review submitted successfully:', response);
+                        showResult('Review submitted successfully! Thank you for your feedback.', 'success');
+                        
+                        // Clear the widget after success
+                        setTimeout(() => {
+                            document.getElementById('reviewWidgetContainer').innerHTML = '';
+                        }, 3000);
+                    },
+                    onError: (error, message) => {
+                        console.error('Review submission failed:', error);
+                        showResult(`Review failed: ${message}`, 'error');
+                    },
+                    onCancel: () => {
+                        document.getElementById('reviewWidgetContainer').innerHTML = '';
+                        showResult('Review cancelled', 'info');
+                    }
+                });
+                
+                // Scroll to widget
+                document.getElementById('reviewWidgetContainer').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+                
+            } catch (error) {
+                console.error('Failed to create review widget:', error);
+                showResult(`Failed to create review widget: ${error.message}`, 'error');
+            }
+        }
+
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('resultMessage');
+            resultDiv.textContent = message;
+            resultDiv.className = `result-message ${type}`;
+            resultDiv.classList.remove('hidden');
+            
+            // Auto-hide after 5 seconds for success/info messages
+            if (type === 'success' || type === 'info') {
+                setTimeout(() => {
+                    resultDiv.classList.add('hidden');
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>
