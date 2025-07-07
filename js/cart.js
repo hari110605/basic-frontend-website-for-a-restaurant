@@ -149,13 +149,19 @@ function updateCartModalContent() {
   const cartItems = document.getElementById('cartItems');
   const cartTotal = document.getElementById('cartTotal');
   const checkoutBtn = document.getElementById('checkoutBtn');
-  
+  const specialInstructionsElement = document.getElementById('specialInstructions');
+
   if (!cartItems) return;
-  
+
   if (cart.isEmpty()) {
     cartItems.innerHTML = '<p class="empty-cart">Your cart is empty</p>';
     cartTotal.textContent = '$0.00';
     checkoutBtn.disabled = true;
+
+    // Clear special instructions when cart is empty
+    if (specialInstructionsElement) {
+      specialInstructionsElement.value = '';
+    }
   } else {
     cartItems.innerHTML = cart.getItems().map(item => `
       <div class="cart-item" data-id="${item.id}">
@@ -172,7 +178,7 @@ function updateCartModalContent() {
         </div>
       </div>
     `).join('');
-    
+
     cartTotal.textContent = formatPrice(cart.getTotal());
     checkoutBtn.disabled = false;
   }
@@ -206,20 +212,38 @@ async function checkout() {
   }
 
   try {
-    const orderData = cart.toOrderFormat();
-    const order = await api.createOrder(orderData);
-    
+    // Get special instructions from the textarea
+    const specialInstructionsElement = document.getElementById('specialInstructions');
+    const specialInstructions = specialInstructionsElement ? specialInstructionsElement.value.trim() : '';
+
+    // Prepare checkout data using the new checkout endpoint format
+    const checkoutData = {
+      items: cart.items.map(item => ({
+        menu_item_id: item.id,
+        quantity: item.quantity
+      })),
+      special_instructions: specialInstructions || undefined
+    };
+
+    // Use the new checkout endpoint
+    const response = await api.checkout(checkoutData);
+
     cart.clear();
     updateCartBadge();
     hideCartModal();
-    
-    showNotification('Order placed successfully!', 'success');
-    
+
+    // Clear special instructions field
+    if (specialInstructionsElement) {
+      specialInstructionsElement.value = '';
+    }
+
+    showNotification('Order placed and delivered successfully!', 'success');
+
     // Redirect to order confirmation or dashboard
     setTimeout(() => {
       window.location.href = 'dashboard.html';
     }, 2000);
-    
+
   } catch (error) {
     console.error('Checkout failed:', error);
     showNotification('Failed to place order. Please try again.', 'error');

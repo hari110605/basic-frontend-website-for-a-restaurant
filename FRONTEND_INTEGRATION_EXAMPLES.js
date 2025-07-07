@@ -98,6 +98,15 @@ class RestaurantAPI {
     });
   }
 
+  // Checkout method - uses the new checkout endpoint
+  async checkout(checkoutData) {
+    return this.apiCall('/checkout/', {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(checkoutData)
+    });
+  }
+
   async getUserOrders() {
     return this.apiCall('/orders/', {
       method: 'GET',
@@ -237,15 +246,41 @@ async function placeOrder() {
       ],
       special_instructions: 'Extra spicy, no onions'
     };
-    
+
     const order = await api.createOrder(orderData);
     console.log('Order placed:', order);
     console.log('Total amount:', order.total_amount);
-    
+
     // Show success message and redirect to order confirmation
-    
+
   } catch (error) {
     console.error('Failed to place order:', error.message);
+    // Show error message to user
+  }
+}
+
+// Example: Checkout Cart (New Endpoint)
+async function checkoutCart() {
+  try {
+    const checkoutData = {
+      items: [
+        { menu_item_id: 1, quantity: 2 },
+        { menu_item_id: 3, quantity: 1 }
+      ],
+      special_instructions: 'Extra spicy, no onions'
+    };
+
+    const response = await api.checkout(checkoutData);
+    console.log('Checkout successful:', response.message);
+    console.log('Order details:', response.order);
+    console.log('Total amount:', response.order.total_amount);
+    console.log('Status:', response.order.status); // Will be "delivered"
+
+    // Clear cart and show success message
+    // Redirect to order confirmation or dashboard
+
+  } catch (error) {
+    console.error('Checkout failed:', error.message);
     // Show error message to user
   }
 }

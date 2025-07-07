@@ -116,6 +116,15 @@ class RestaurantAPI {
     });
   }
 
+  // Checkout method - uses the new checkout endpoint
+  async checkout(checkoutData) {
+    return this.apiCall('/checkout/', {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(checkoutData)
+    });
+  }
+
   async getUserOrders() {
     return this.apiCall('/orders/', {
       method: 'GET',

@@ -1204,7 +1204,41 @@ body {
     text-align: center;
     margin: 20px 0;
     font-size: 18px;
-    color: #333;
+    color: #cecbcb;
+}
+
+.special-instructions {
+    margin: 20px 0;
+}
+
+.special-instructions label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #cecbcb;
+    font-size: 14px;
+}
+
+.special-instructions textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+    min-height: 80px;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+.special-instructions textarea:focus {
+    outline: none;
+    border-color: #e4514e;
+}
+
+.special-instructions textarea::placeholder {
+    color: #999;
 }
 
 .empty-cart {
