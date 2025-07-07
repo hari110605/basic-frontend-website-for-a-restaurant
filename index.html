@@ -4,21 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="responsive-utils.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Foodie - Healthy Diet Everyday</title>
 </head>
 <body>
     <!-- start menu  -->
     <nav class="menu">
         <div class="logo">
-            <h3>Foodie</h3>
+            <a href="index.html" style="text-decoration: none; color: inherit;"><h3>Foodie</h3></a>
         </div>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" aria-label="Toggle mobile menu" aria-expanded="false">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+
         <ul class="nav-links">
+            <li><a href="index.html" class="active">Home</a></li>
             <li><a href="view.html">Menu</a></li>
             <li><a href="#" onclick="showReservationModal()">Reservations</a></li>
-            <li><a href="#reviews">Reviews</a></li>
+            <li><a href="reviews.html">Reviews</a></li>
             <li class="cart-container">
                 <a href="#" onclick="showCartModal()" class="cart-link">
                     🛒 Cart
@@ -85,6 +96,9 @@
             </div>
             <div id="reviewsList" class="reviews-grid" style="display: none;">
                 <!-- Reviews will be loaded here -->
+            </div>
+            <div class="reviews-cta" style="text-align: center; margin-top: 30px;">
+                <a href="reviews.html" class="btn btn-primary">View All Reviews</a>
             </div>
         </div>
     </section>
@@ -233,5 +247,6 @@
     <script src="js/cart.js"></script>
     <script src="js/app.js"></script>
     <script src="js/reservations.js"></script>
+    <script src="js/mobile-nav.js"></script>
 </body>
 </html>

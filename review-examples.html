@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Function Examples - Foodie</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .examples-container {
+            max-width: 800px;
+            margin: 100px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .example-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+        }
+
+        .example-title {
+            color: #e4514e;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .example-description {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        .example-button {
+            background: #e4514e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .example-button:hover {
+            background: #d63c39;
+            transform: translateY(-2px);
+        }
+
+        .form-example {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .form-example input,
+        .form-example textarea,
+        .form-example select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .star-rating-example {
+            display: flex;
+            gap: 5px;
+            margin: 10px 0;
+        }
+
+        .star-example {
+            font-size: 24px;
+            cursor: pointer;
+            opacity: 0.3;
+            transition: opacity 0.3s ease;
+        }
+
+        .star-example.active {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="menu">
+        <div class="logo">
+            <a href="index.html"><h3>Foodie</h3></a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="view.html">Menu</a></li>
+            <li><a href="reviews.html">Reviews</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+        </ul>
+    </nav>
+
+    <div class="examples-container">
+        <h1>Review Function Examples</h1>
+        <p>This page demonstrates how to use the review submission functions in your application.</p>
+
+        <!-- Example 1: Simple Review Submission -->
+        <div class="example-section">
+            <h2 class="example-title">1. Simple Review Submission</h2>
+            <p class="example-description">
+                Submit a review programmatically with order ID, rating, and description.
+            </p>
+            <div class="code-block">
+// Basic usage
+await addReview(123, 5, "Great food and excellent service!");
+
+// With error handling
+try {
+    await addReview(123, 5, "Great food and excellent service!");
+    console.log("Review submitted successfully!");
+} catch (error) {
+    console.error("Failed to submit review:", error.message);
+}
+            </div>
+            <button class="example-button" onclick="exampleSimpleReview()">Try Simple Review</button>
+        </div>
+
+        <!-- Example 2: Review with Modal -->
+        <div class="example-section">
+            <h2 class="example-title">2. Review with Modal Interface</h2>
+            <p class="example-description">
+                Open a modal for users to submit reviews interactively.
+            </p>
+            <div class="code-block">
+// Open review modal for an order
+addReviewWithModal(123);
+
+// With order information
+addReviewWithModal(123, {
+    orderInfo: {
+        id: 123,
+        order_date: "2024-01-15",
+        total_amount: 25.99
+    }
+});
+            </div>
+            <button class="example-button" onclick="exampleModalReview()">Open Review Modal</button>
+        </div>
+
+        <!-- Example 3: Advanced Review with Callbacks -->
+        <div class="example-section">
+            <h2 class="example-title">3. Advanced Review with Callbacks</h2>
+            <p class="example-description">
+                Use callbacks to handle loading states, success, and error scenarios.
+            </p>
+            <div class="code-block">
+await addReview(123, 4, "Good experience overall", {
+    onLoading: (isLoading) => {
+        console.log("Loading:", isLoading);
+        // Update UI loading state
+    },
+    onSuccess: (response) => {
+        console.log("Success:", response);
+        // Handle success (e.g., refresh data)
+    },
+    onError: (error, message) => {
+        console.log("Error:", message);
+        // Handle error (e.g., show custom message)
+    },
+    successMessage: "Thank you for your feedback!"
+});
+            </div>
+            <button class="example-button" onclick="exampleAdvancedReview()">Try Advanced Review</button>
+        </div>
+
+        <!-- Example 4: Custom Review Form -->
+        <div class="example-section">
+            <h2 class="example-title">4. Custom Review Form</h2>
+            <p class="example-description">
+                Create your own review form and submit reviews programmatically.
+            </p>
+            <div class="form-example">
+                <label>Order ID:</label>
+                <input type="number" id="customOrderId" value="123" min="1">
+                
+                <label>Rating:</label>
+                <div class="star-rating-example" id="customStarRating">
+                    <span class="star-example" data-rating="1">⭐</span>
+                    <span class="star-example" data-rating="2">⭐</span>
+                    <span class="star-example" data-rating="3">⭐</span>
+                    <span class="star-example" data-rating="4">⭐</span>
+                    <span class="star-example" data-rating="5">⭐</span>
+                </div>
+                
+                <label>Review Description:</label>
+                <textarea id="customDescription" placeholder="Write your review here..." rows="4"></textarea>
+                
+                <button class="example-button" onclick="submitCustomReview()">Submit Custom Review</button>
+            </div>
+        </div>
+
+        <!-- Example 5: Validation -->
+        <div class="example-section">
+            <h2 class="example-title">5. Review Validation</h2>
+            <p class="example-description">
+                Validate review data before submission.
+            </p>
+            <div class="code-block">
+// Validate review data
+const validation = validateReviewData(123, 5, "Great food!");
+if (validation.isValid) {
+    console.log("Review data is valid");
+} else {
+    console.log("Validation error:", validation.message);
+}
+
+// Check if order can be reviewed
+const order = { id: 123, status: 'delivered', has_review: false };
+if (canReviewOrder(order)) {
+    console.log("Order can be reviewed");
+}
+            </div>
+            <button class="example-button" onclick="exampleValidation()">Test Validation</button>
+        </div>
+
+        <!-- Example 6: Review Button Generation -->
+        <div class="example-section">
+            <h2 class="example-title">6. Dynamic Review Button</h2>
+            <p class="example-description">
+                Generate review buttons dynamically for orders.
+            </p>
+            <div class="code-block">
+// Generate review button HTML
+const order = {
+    id: 123,
+    status: 'delivered',
+    has_review: false,
+    order_date: '2024-01-15',
+    total_amount: 25.99
+};
+
+const buttonHTML = getReviewButtonHTML(order);
+document.getElementById('orderContainer').innerHTML += buttonHTML;
+            </div>
+            <div id="dynamicButtonContainer"></div>
+            <button class="example-button" onclick="exampleDynamicButton()">Generate Review Button</button>
+        </div>
+    </div>
+
+    <!-- Include all necessary scripts -->
+    <script src="js/error-handler.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/review-submission.js"></script>
+
+    <script>
+        // Example functions
+        let customRating = 0;
+
+        // Example 1: Simple Review
+        async function exampleSimpleReview() {
+            try {
+                await addReview(123, 5, "This is a test review from the examples page!");
+                alert("Review submitted successfully!");
+            } catch (error) {
+                alert("Error: " + error.message);
+            }
+        }
+
+        // Example 2: Modal Review
+        function exampleModalReview() {
+            addReviewWithModal(123, {
+                orderInfo: {
+                    id: 123,
+                    order_date: "2024-01-15",
+                    total_amount: 25.99
+                }
+            });
+        }
+
+        // Example 3: Advanced Review
+        async function exampleAdvancedReview() {
+            try {
+                await addReview(124, 4, "Good experience with advanced callbacks", {
+                    onLoading: (isLoading) => {
+                        console.log("Loading state:", isLoading);
+                    },
+                    onSuccess: (response) => {
+                        console.log("Success callback:", response);
+                        alert("Review submitted with success callback!");
+                    },
+                    onError: (error, message) => {
+                        console.log("Error callback:", message);
+                    },
+                    successMessage: "Thank you for your detailed feedback!"
+                });
+            } catch (error) {
+                console.log("Caught error:", error.message);
+            }
+        }
+
+        // Example 4: Custom Form
+        function submitCustomReview() {
+            const orderId = document.getElementById('customOrderId').value;
+            const description = document.getElementById('customDescription').value;
+            
+            if (!customRating) {
+                alert("Please select a rating");
+                return;
+            }
+            
+            addReview(parseInt(orderId), customRating, description)
+                .then(() => alert("Custom review submitted!"))
+                .catch(error => alert("Error: " + error.message));
+        }
+
+        // Custom star rating handler
+        document.addEventListener('DOMContentLoaded', () => {
+            const stars = document.querySelectorAll('.star-example');
+            stars.forEach((star, index) => {
+                star.addEventListener('click', () => {
+                    customRating = index + 1;
+                    stars.forEach((s, i) => {
+                        s.classList.toggle('active', i < customRating);
+                    });
+                });
+            });
+        });
+
+        // Example 5: Validation
+        function exampleValidation() {
+            const validation1 = validateReviewData(123, 5, "Great food!");
+            const validation2 = validateReviewData(123, 0, "Too short");
+            
+            console.log("Validation 1:", validation1);
+            console.log("Validation 2:", validation2);
+            
+            alert(`Validation results:\n1. ${validation1.message}\n2. ${validation2.message}`);
+        }
+
+        // Example 6: Dynamic Button
+        function exampleDynamicButton() {
+            const order = {
+                id: 125,
+                status: 'delivered',
+                has_review: false,
+                order_date: '2024-01-15',
+                total_amount: 25.99
+            };
+            
+            const buttonHTML = getReviewButtonHTML(order);
+            document.getElementById('dynamicButtonContainer').innerHTML = buttonHTML;
+        }
+    </script>
+</body>
+</html>

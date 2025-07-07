@@ -155,6 +155,66 @@ class RestaurantAPI {
     });
   }
 
+  async getAllReviews() {
+    // Get all reviews by fetching all pages
+    let allReviews = [];
+    let page = 1;
+    let hasMore = true;
+
+    while (hasMore) {
+      try {
+        const response = await this.getReviews(page, 50);
+        const reviews = Array.isArray(response) ? response : (response.results || []);
+        allReviews = allReviews.concat(reviews);
+
+        // Check if there are more pages
+        hasMore = response.next ? true : false;
+        page++;
+
+        // Safety break
+        if (page > 20) break;
+      } catch (error) {
+        console.error(`Error fetching reviews page ${page}:`, error);
+        break;
+      }
+    }
+
+    return allReviews;
+  }
+
+  async getReviewStats() {
+    try {
+      const reviews = await this.getAllReviews();
+
+      if (reviews.length === 0) {
+        return {
+          totalReviews: 0,
+          averageRating: 0,
+          ratingDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+        };
+      }
+
+      const totalReviews = reviews.length;
+      const totalStars = reviews.reduce((sum, review) => sum + review.stars, 0);
+      const averageRating = totalStars / totalReviews;
+
+      const ratingDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+      reviews.forEach(review => {
+        ratingDistribution[review.stars]++;
+      });
+
+      return {
+        totalReviews,
+        averageRating: Math.round(averageRating * 10) / 10,
+        ratingDistribution,
+        reviews
+      };
+    } catch (error) {
+      console.error('Error getting review stats:', error);
+      throw error;
+    }
+  }
+
   // Utility methods
   isAuthenticated() {
     return !!this.token;

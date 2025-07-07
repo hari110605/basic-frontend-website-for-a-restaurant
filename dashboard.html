@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Foodie</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="responsive-utils.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <style>
         .dashboard-container {
             max-width: 1200px;
@@ -210,24 +212,163 @@
             color: #666;
         }
 
+        /* Tablet Responsive */
+        @media (max-width: 991px) {
+            .dashboard-container {
+                padding: 30px 15px;
+            }
+
+            .dashboard-title {
+                font-size: 32px;
+            }
+
+            .profile-info {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 20px 15px;
+            }
+
+            .dashboard-title {
+                font-size: 28px;
+            }
+
+            .dashboard-subtitle {
+                font-size: 16px;
+            }
+
             .dashboard-tabs {
                 flex-wrap: wrap;
                 justify-content: center;
+                margin-bottom: 30px;
             }
 
             .tab-button {
-                padding: 12px 20px;
+                padding: 10px 16px;
                 font-size: 14px;
+                margin: 3px;
+                min-width: 100px;
             }
 
             .order-header, .reservation-header {
                 flex-direction: column;
                 align-items: flex-start;
+                gap: 10px;
+            }
+
+            .order-item, .reservation-item {
+                padding: 20px 15px;
+            }
+
+            .section-title {
+                font-size: 20px;
+                margin-bottom: 15px;
+            }
+
+            .profile-info {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .info-item {
+                padding: 12px;
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 480px) {
+            .dashboard-container {
+                padding: 15px 10px;
             }
 
             .dashboard-title {
-                font-size: 28px;
+                font-size: 24px;
+                margin-bottom: 5px;
+            }
+
+            .dashboard-subtitle {
+                font-size: 14px;
+            }
+
+            .dashboard-tabs {
+                margin-bottom: 20px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+
+            .tab-button {
+                padding: 8px 12px;
+                font-size: 12px;
+                margin: 2px;
+                min-width: 80px;
+                border-radius: 15px;
+            }
+
+            .order-item, .reservation-item {
+                padding: 15px 10px;
+                margin-bottom: 15px;
+            }
+
+            .order-id {
+                font-size: 16px;
+            }
+
+            .status-badge {
+                font-size: 10px;
+                padding: 4px 8px;
+            }
+
+            .order-details, .reservation-details {
+                font-size: 14px;
+            }
+
+            .order-item-detail {
+                padding: 6px 0;
+                font-size: 13px;
+            }
+
+            .order-total {
+                font-size: 16px;
+                margin-top: 10px;
+            }
+
+            .review-button {
+                padding: 6px 12px;
+                font-size: 12px;
+                margin-top: 8px;
+            }
+
+            .section-title {
+                font-size: 18px;
+                margin-bottom: 12px;
+            }
+
+            .loading {
+                padding: 25px;
+                font-size: 14px;
+            }
+
+            .no-data {
+                padding: 40px 15px;
+                font-size: 14px;
+            }
+
+            .profile-section {
+                padding: 20px 15px;
+            }
+
+            .info-item {
+                padding: 10px;
+            }
+
+            .info-label {
+                font-size: 14px;
+            }
+
+            .info-value {
+                font-size: 13px;
             }
         }
     </style>
@@ -238,11 +379,20 @@
         <div class="logo">
             <a href="index.html"><h3>Foodie</h3></a>
         </div>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" aria-label="Toggle mobile menu" aria-expanded="false">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+
         <ul class="nav-links">
             <li><a href="index.html">Home</a></li>
             <li><a href="view.html">Menu</a></li>
             <li><a href="#" onclick="showReservationModal()">Reservations</a></li>
-            <li><a href="#reviews">Reviews</a></li>
+            <li><a href="reviews.html">Reviews</a></li>
+            <li><a href="dashboard.html" class="active">Dashboard</a></li>
             <li class="cart-container">
                 <a href="#" onclick="showCartModal()" class="cart-link">
                     🛒 Cart
@@ -250,7 +400,7 @@
                 </a>
             </li>
         </ul>
-        
+
         <!-- User menu (always shown on dashboard) -->
         <div class="user-menu">
             <span class="user-name">User</span>
@@ -303,10 +453,14 @@
         <div class="modal-content">
             <span class="close" onclick="hideReviewModal()">&times;</span>
             <h2>Write a Review</h2>
+            <p style="color: #666; margin-bottom: 20px;">Share your experience with this order to help other customers</p>
             <form id="reviewForm">
                 <input type="hidden" id="reviewOrderId" name="order_id">
-                <div class="form-group">
-                    <label for="reviewStars">Rating:</label>
+                <div class="review-form-group">
+                    <label class="rating-label">
+                        How would you rate your experience?
+                        <span class="rating-description" id="ratingDescription">Click stars to rate</span>
+                    </label>
                     <div class="star-rating">
                         <span class="star" data-rating="1">⭐</span>
                         <span class="star" data-rating="2">⭐</span>
@@ -316,9 +470,21 @@
                     </div>
                     <input type="hidden" id="reviewStars" name="stars" required>
                 </div>
-                <div class="form-group">
-                    <label for="reviewDescription">Review:</label>
-                    <textarea id="reviewDescription" name="description" rows="4" required placeholder="Share your experience..."></textarea>
+                <div class="review-form-group">
+                    <label for="reviewDescription">Tell us about your experience:</label>
+                    <textarea
+                        id="reviewDescription"
+                        name="description"
+                        rows="4"
+                        required
+                        placeholder="What did you think of the food, service, and overall experience? (minimum 10 characters)"
+                        class="review-textarea"
+                        maxlength="500"
+                        oninput="updateCharacterCount(this)">
+                    </textarea>
+                    <div class="character-count">
+                        <span id="charCount">0</span>/500 characters (minimum 10)
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit Review</button>
             </form>
@@ -331,6 +497,8 @@
     <script src="js/cart.js"></script>
     <script src="js/app.js"></script>
     <script src="js/reservations.js"></script>
+    <script src="js/review-submission.js"></script>
     <script src="js/dashboard.js"></script>
+    <script src="js/mobile-nav.js"></script>
 </body>
 </html>

@@ -85,8 +85,6 @@ function renderOrdersList(orders) {
 }
 
 function createOrderHTML(order) {
-  const canReview = order.status === 'delivered' && !order.has_review;
-  
   return `
     <div class="order-item">
       <div class="order-header">
@@ -108,7 +106,7 @@ function createOrderHTML(order) {
         </div>
         ${order.special_instructions ? `<p><strong>Special Instructions:</strong> ${order.special_instructions}</p>` : ''}
         <div class="order-total">Total: ${formatPrice(order.total_amount)}</div>
-        ${canReview ? `<button class="review-button" onclick="showReviewModal(${order.id})">Write Review</button>` : ''}
+        ${getReviewButtonHTML ? getReviewButtonHTML(order) : ''}
       </div>
     </div>
   `;
@@ -216,9 +214,15 @@ function hideReviewModal() {
 }
 
 function clearReviewForm() {
-  const form = document.getElementById('reviewForm');
-  if (form) form.reset();
-  resetStarRating();
+  // Use the new reset function if available
+  if (typeof resetReviewModal === 'function') {
+    resetReviewModal();
+  } else {
+    // Fallback to old method
+    const form = document.getElementById('reviewForm');
+    if (form) form.reset();
+    resetStarRating();
+  }
 }
 
 function resetStarRating() {
@@ -233,39 +237,80 @@ function setStarRating(rating) {
   selectedRating = rating;
   const starsInput = document.getElementById('reviewStars');
   if (starsInput) starsInput.value = rating;
-  
+
   const stars = document.querySelectorAll('.star');
   stars.forEach((star, index) => {
-    star.style.opacity = index < rating ? '1' : '0.3';
+    if (index < rating) {
+      star.style.opacity = '1';
+      star.classList.add('selected');
+    } else {
+      star.style.opacity = '0.3';
+      star.classList.remove('selected');
+    }
   });
+
+  // Update rating description
+  const descriptions = {
+    1: 'Poor - Not satisfied',
+    2: 'Fair - Below expectations',
+    3: 'Good - Met expectations',
+    4: 'Very Good - Exceeded expectations',
+    5: 'Excellent - Outstanding experience'
+  };
+
+  const ratingDescription = document.getElementById('ratingDescription');
+  if (ratingDescription) {
+    ratingDescription.textContent = descriptions[rating] || 'Click stars to rate';
+    ratingDescription.style.color = rating > 0 ? '#e4514e' : '#666';
+  }
+}
+
+// Character count function
+function updateCharacterCount(textarea) {
+  const charCount = document.getElementById('charCount');
+  const currentLength = textarea.value.length;
+
+  if (charCount) {
+    charCount.textContent = currentLength;
+
+    // Update styling based on character count
+    const countElement = charCount.parentElement;
+    if (currentLength < 10) {
+      countElement.classList.add('warning');
+    } else {
+      countElement.classList.remove('warning');
+    }
+  }
 }
 
 async function handleReviewSubmission(event) {
   event.preventDefault();
-  
+
   const form = event.target;
-  const reviewData = {
-    order_id: parseInt(form.order_id.value),
-    stars: selectedRating,
-    description: form.description.value
-  };
-  
-  if (selectedRating === 0) {
-    showNotification('Please select a rating', 'warning');
-    return;
-  }
-  
+  const orderId = parseInt(form.order_id.value);
+  const rating = selectedRating;
+  const description = form.description.value.trim();
+
   try {
-    await api.createReview(reviewData);
-    hideReviewModal();
-    showNotification('Review submitted successfully!', 'success');
-    
-    // Reload orders to update review status
-    loadUserOrders();
-    
+    // Use the new review submission function
+    await addReview(orderId, rating, description, {
+      onLoading: (isLoading) => {
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (submitButton) {
+          submitButton.disabled = isLoading;
+          submitButton.textContent = isLoading ? 'Submitting...' : 'Submit Review';
+        }
+      },
+      onSuccess: (response) => {
+        hideReviewModal();
+        loadUserOrders(); // Reload orders to update review status
+      },
+      successMessage: 'Thank you! Your review has been submitted successfully.'
+    });
+
   } catch (error) {
-    console.error('Failed to submit review:', error);
-    showNotification(error.message || 'Failed to submit review', 'error');
+    // Error handling is done by the addReview function
+    console.error('Review submission failed:', error);
   }
 }
 
@@ -308,4 +353,5 @@ if (typeof window !== 'undefined') {
   window.showTab = showTab;
   window.showReviewModal = showReviewModal;
   window.hideReviewModal = hideReviewModal;
+  window.updateCharacterCount = updateCharacterCount;
 }
