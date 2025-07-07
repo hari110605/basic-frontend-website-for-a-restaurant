@@ -1,0 +1,7 @@
+<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" height="200" fill="#f8f9fa"/>
+  <circle cx="150" cy="80" r="25" fill="#e4514e" opacity="0.3"/>
+  <rect x="125" y="110" width="50" height="30" rx="5" fill="#e4514e" opacity="0.3"/>
+  <text x="150" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#666">Food Image</text>
+  <text x="150" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#999">Coming Soon</text>
+</svg>

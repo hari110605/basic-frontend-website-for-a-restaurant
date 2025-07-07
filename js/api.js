@@ -1,0 +1,227 @@
+// ===============================================================================
+//                    RESTAURANT API SERVICE MODULE
+// ===============================================================================
+
+// Base configuration
+const API_BASE_URL = 'http://127.0.0.1:8000/api';
+
+// ===============================================================================
+//                              API SERVICE CLASS
+// ===============================================================================
+
+class RestaurantAPI {
+  constructor() {
+    this.baseURL = API_BASE_URL;
+    this.token = localStorage.getItem('access_token');
+  }
+
+  // Helper method to get headers
+  getHeaders(includeAuth = true, contentType = 'application/json') {
+    const headers = {}; 
+    
+    if (contentType) headers['Content-Type'] = contentType;
+    if (includeAuth && this.token) headers['Authorization'] = `Bearer ${this.token}`;
+    return headers;
+  }
+
+  // Helper method for API calls
+  async apiCall(endpoint, options = {}) {
+    const url = `${this.baseURL}${endpoint}`;
+
+    try {
+      const response = await fetch(url, options);
+
+      if (response.status === 401) {
+        // Token expired, redirect to login
+        this.logout();
+        throw new Error('Authentication required');
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new Error('Network error: Unable to connect to server');
+      }
+      throw error;
+    }
+  }
+
+  // Authentication methods
+  async register(userData) {
+    const response = await this.apiCall('/auth/register/', {
+      method: 'POST',
+      headers: this.getHeaders(false),
+      body: JSON.stringify(userData)
+    });
+    
+    // Store tokens
+    if (response.tokens) {
+      localStorage.setItem('access_token', response.tokens.access);
+      localStorage.setItem('refresh_token', response.tokens.refresh);
+      this.token = response.tokens.access;
+    }
+    
+    return response;
+  }
+
+  async login(email, password) {
+    const response = await this.apiCall('/auth/login/', {
+      method: 'POST',
+      headers: this.getHeaders(false),
+      body: JSON.stringify({ email, password })
+    });
+    
+    // Store tokens
+    localStorage.setItem('access_token', response.tokens.access);
+    localStorage.setItem('refresh_token', response.tokens.refresh);
+    this.token = response.tokens.access;
+    
+    return response;
+  }
+
+  logout() {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    this.token = null;
+    // Trigger logout event
+    window.dispatchEvent(new CustomEvent('userLoggedOut'));
+  }
+
+  async getProfile() {
+    return this.apiCall('/auth/profile/', {
+      method: 'GET',
+      headers: this.getHeaders()
+    });
+  }
+
+  // Menu methods
+  async getMenu() {
+    return this.apiCall('/menu/', {
+      method: 'GET',
+      headers: this.getHeaders(false)
+    });
+  }
+
+  // Order methods
+  async createOrder(orderData) {
+    return this.apiCall('/order/', {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(orderData)
+    });
+  }
+
+  async getUserOrders() {
+    return this.apiCall('/orders/', {
+      method: 'GET',
+      headers: this.getHeaders()
+    });
+  }
+
+  // Reservation methods
+  async createReservation(reservationData) {
+    return this.apiCall('/reservation/', {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(reservationData)
+    });
+  }
+
+  async getUserReservations() {
+    return this.apiCall('/reservations/', {
+      method: 'GET',
+      headers: this.getHeaders()
+    });
+  }
+
+  // Review methods
+  async createReview(reviewData) {
+    return this.apiCall('/review/', {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(reviewData)
+    });
+  }
+
+  async getReviews(page = 1, pageSize = 10) {
+    return this.apiCall(`/reviews/?page=${page}&page_size=${pageSize}`, {
+      method: 'GET',
+      headers: this.getHeaders(false)
+    });
+  }
+
+  // Utility methods
+  isAuthenticated() {
+    return !!this.token;
+  }
+
+  getCurrentUser() {
+    const userStr = localStorage.getItem('current_user');
+    return userStr ? JSON.parse(userStr) : null;
+  }
+
+  setCurrentUser(user) {
+    localStorage.setItem('current_user', JSON.stringify(user));
+  }
+}
+
+// ===============================================================================
+//                              UTILITY FUNCTIONS
+// ===============================================================================
+
+// Format date for display
+function formatDate(dateString) {
+  return new Date(dateString).toLocaleDateString();
+}
+
+// Format datetime for display
+function formatDateTime(dateTimeString) {
+  return new Date(dateTimeString).toLocaleString();
+}
+
+// Format price for display
+function formatPrice(price) {
+  return `$${price.toFixed(2)}`;
+}
+
+// Get order status badge color
+function getOrderStatusColor(status) {
+  const colors = {
+    pending: '#ffa500',
+    confirmed: '#007bff',
+    preparing: '#6f42c1',
+    ready: '#28a745',
+    delivered: '#6c757d',
+    cancelled: '#dc3545'
+  };
+  return colors[status] || '#6c757d';
+}
+
+// Show notification
+function showNotification(message, type = 'info') {
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = `notification notification-${type}`;
+  notification.textContent = message;
+  
+  // Add to page
+  document.body.appendChild(notification);
+  
+  // Remove after 3 seconds
+  setTimeout(() => {
+    notification.remove();
+  }, 3000);
+}
+
+// Initialize API service
+const api = new RestaurantAPI();
+
+// Export for use in other modules
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { RestaurantAPI, api, formatDate, formatDateTime, formatPrice, getOrderStatusColor, showNotification };
+}

@@ -294,6 +294,58 @@
                 height: 180px;
             }
         }
+
+        /* Loading and Error States */
+        .loading-container, .error-container {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #e4514e;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .error-container {
+            color: #dc3545;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Add to Cart Button */
+        .add-to-cart-btn {
+            background: linear-gradient(135deg, #e4514e 0%, #ff6b68 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .add-to-cart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(228, 81, 78, 0.3);
+        }
+
+        .add-to-cart-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
     </style>
 </head>
 <body>
@@ -305,10 +357,30 @@
         <ul class="nav-links">
             <li><a href="index.html">Home</a></li>
             <li><a href="view.html" class="active">Menu</a></li>
-            <li><a href="">Our Deal</a></li>
-            <li><a href="">Categories</a></li>
-            <li><a href="">Restaurants</a></li>
+            <li><a href="#" onclick="showReservationModal()">Reservations</a></li>
+            <li><a href="#reviews">Reviews</a></li>
+            <li class="cart-container">
+                <a href="#" onclick="showCartModal()" class="cart-link">
+                    🛒 Cart
+                    <span class="cart-badge">0</span>
+                </a>
+            </li>
         </ul>
+
+        <!-- Authentication buttons (shown when not logged in) -->
+        <div class="auth-buttons">
+            <button class="btn btn-outline" onclick="showLoginModal()">Login</button>
+            <button class="btn btn-primary" onclick="showRegisterModal()">Sign Up</button>
+        </div>
+
+        <!-- User menu (shown when logged in) -->
+        <div class="user-menu" style="display: none;">
+            <span class="user-name">User</span>
+            <div class="user-dropdown">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="#" class="logout-btn">Logout</a>
+            </div>
+        </div>
     </nav>
 
     <!-- Back Button -->
@@ -319,62 +391,134 @@
             <h1 class="menu-title">Our Delicious Menu</h1>
             <p class="menu-subtitle">Discover our carefully crafted dishes made with the finest ingredients</p>
         </div>
-        <div class="menu-grid">
-            <div class="menu-card">
-                <img src="https://t3.ftcdn.net/jpg/06/12/42/50/360_F_612425060_FeZ7qqUNup8R1BvoVoox6zZWmd69QXuA.jpg" alt="Classic Hamburger">
-                <div class="menu-content">
-                    <h3>Classic Hamburger</h3>
-                    <p>Juicy grilled beef patty with melted cheese, fresh lettuce, ripe tomato, and caramelized onions on a toasted brioche bun.</p>
-                    <div class="price">$6.99</div>
-                </div>
-            </div>
+        <!-- Loading state -->
+        <div id="menuLoading" class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>Loading delicious menu items...</p>
+        </div>
 
-            <div class="menu-card">
-                <img src="https://i0.wp.com/cookingitalians.com/wp-content/uploads/2024/11/Margherita-Pizza.jpg?fit=1344%2C768&ssl=1" alt="Margherita Pizza">
-                <div class="menu-content">
-                    <h3>Margherita Pizza</h3>
-                    <p>Authentic Italian pizza with fresh mozzarella, San Marzano tomato sauce, and aromatic basil leaves on our signature crispy crust.</p>
-                    <div class="price">$8.49</div>
-                </div>
-            </div>
+        <!-- Error state -->
+        <div id="menuError" class="error-container" style="display: none;">
+            <p>Failed to load menu items. Please try again.</p>
+            <button class="btn btn-primary" onclick="loadMenuItems()">Retry</button>
+        </div>
 
-            <div class="menu-card">
-                <img src="https://s.lightorangebean.com/media/20240914160809/Spicy-Penne-Pasta_-done.png" alt="Creamy Alfredo Pasta">
-                <div class="menu-content">
-                    <h3>Creamy Alfredo Pasta</h3>
-                    <p>Rich and creamy Alfredo sauce tossed with perfectly cooked fettuccine and tender grilled chicken breast, topped with fresh parmesan.</p>
-                    <div class="price">$9.25</div>
-                </div>
-            </div>
-
-            <div class="menu-card">
-                <img src="https://recipesblob.oetker.in/assets/f7ea4ac65c534c1492d156dfac9db2ad/1272x764/sandwichetojpg.webp" alt="Grilled Chicken Sandwich">
-                <div class="menu-content">
-                    <h3>Grilled Chicken Sandwich</h3>
-                    <p>Perfectly seasoned grilled chicken breast with creamy mayo, crisp lettuce, and tangy pickles served on a fresh brioche bun.</p>
-                    <div class="price">$5.75</div>
-                </div>
-            </div>
-
-            <div class="menu-card">
-                <img src="https://static01.nyt.com/images/2024/09/10/multimedia/JG-Parmesan-Crusted-Salmon-Caesar-Saladrex-kjpb/JG-Parmesan-Crusted-Salmon-Caesar-Saladrex-kjpb-master768.jpg?quality=75&auto=webp" alt="Caesar Salad">
-                <div class="menu-content">
-                    <h3>Caesar Salad</h3>
-                    <p>Fresh romaine lettuce tossed with our house-made Caesar dressing, parmesan cheese, and crispy croutons.</p>
-                    <div class="price">$7.99</div>
-                </div>
-            </div>
-
-            <div class="menu-card">
-                <img src="images/pepperoni.jpg" alt="Pepperoni Pizza">
-                <div class="menu-content">
-                    <h3>Pepperoni Pizza</h3>
-                    <p>Classic pepperoni pizza with mozzarella cheese and our signature tomato sauce on a hand-tossed crust.</p>
-                    <div class="price">$9.99</div>
-                </div>
-            </div>
+        <!-- Menu grid - will be populated dynamically -->
+        <div id="menuGrid" class="menu-grid" style="display: none;">
+            <!-- Menu items will be inserted here by JavaScript -->
         </div>
     </div>
 
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideLoginModal()">&times;</span>
+            <h2>Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email:</label>
+                    <input type="email" id="loginEmail" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password:</label>
+                    <input type="password" id="loginPassword" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+                <p class="modal-footer">
+                    Don't have an account?
+                    <a href="#" onclick="hideLoginModal(); showRegisterModal();">Sign up</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideRegisterModal()">&times;</span>
+            <h2>Sign Up</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerUsername">Username:</label>
+                    <input type="text" id="registerUsername" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email:</label>
+                    <input type="email" id="registerEmail" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password:</label>
+                    <input type="password" id="registerPassword" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPasswordConfirm">Confirm Password:</label>
+                    <input type="password" id="registerPasswordConfirm" name="password_confirm" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign Up</button>
+                <p class="modal-footer">
+                    Already have an account?
+                    <a href="#" onclick="hideRegisterModal(); showLoginModal();">Login</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideCartModal()">&times;</span>
+            <h2>Shopping Cart</h2>
+            <div id="cartItems"></div>
+            <div class="cart-total">
+                <strong>Total: <span id="cartTotal">$0.00</span></strong>
+            </div>
+            <button id="checkoutBtn" class="btn btn-primary" onclick="checkout()">Checkout</button>
+        </div>
+    </div>
+
+    <!-- Reservation Modal -->
+    <div id="reservationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideReservationModal()">&times;</span>
+            <h2>Make a Reservation</h2>
+            <form id="reservationForm">
+                <div class="form-group">
+                    <label for="reservationDate">Date:</label>
+                    <input type="date" id="reservationDate" name="reservation_date" required>
+                </div>
+                <div class="form-group">
+                    <label for="reservationTime">Time:</label>
+                    <input type="time" id="reservationTime" name="reservation_time" required>
+                </div>
+                <div class="form-group">
+                    <label for="partySize">Party Size:</label>
+                    <select id="partySize" name="party_size" required>
+                        <option value="">Select party size</option>
+                        <option value="1">1 person</option>
+                        <option value="2">2 people</option>
+                        <option value="3">3 people</option>
+                        <option value="4">4 people</option>
+                        <option value="5">5 people</option>
+                        <option value="6">6 people</option>
+                        <option value="7">7 people</option>
+                        <option value="8">8 people</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="specialRequests">Special Requests:</label>
+                    <textarea id="specialRequests" name="special_requests" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Make Reservation</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript includes -->
+    <script src="js/error-handler.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/reservations.js"></script>
+    <script src="js/menu.js"></script>
 </body>
 </html>

@@ -17,10 +17,30 @@
         </div>
         <ul class="nav-links">
             <li><a href="view.html">Menu</a></li>
-            <li><a href="">Our Deal</a></li>
-            <li><a href="">Categories</a></li>
-            <li><a href="">Restaurants</a></li>
+            <li><a href="#" onclick="showReservationModal()">Reservations</a></li>
+            <li><a href="#reviews">Reviews</a></li>
+            <li class="cart-container">
+                <a href="#" onclick="showCartModal()" class="cart-link">
+                    🛒 Cart
+                    <span class="cart-badge">0</span>
+                </a>
+            </li>
         </ul>
+
+        <!-- Authentication buttons (shown when not logged in) -->
+        <div class="auth-buttons">
+            <button class="btn btn-outline" onclick="showLoginModal()">Login</button>
+            <button class="btn btn-primary" onclick="showRegisterModal()">Sign Up</button>
+        </div>
+
+        <!-- User menu (shown when logged in) -->
+        <div class="user-menu" style="display: none;">
+            <span class="user-name">User</span>
+            <div class="user-dropdown">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="#" class="logout-btn">Logout</a>
+            </div>
+        </div>
     </nav>
     <!-- end menu  -->
     <!-- start main -->
@@ -31,7 +51,7 @@
                 <p class="hero-description">Order today and receive your <br> package tomorrow</p>
                 <div class="button-container">
                     <a href="view.html" class="btn btn-primary">View Menu</a>
-                    <button class="btn btn-secondary">Book a Table</button>
+                    <button class="btn btn-secondary" onclick="showReservationModal()">Book a Table</button>
                 </div>
             </div>
             <div class="schedule-info">
@@ -50,6 +70,25 @@
         </figure>
     </main>
     <!-- end main  -->
+
+    <!-- start reviews section -->
+    <section id="reviews" class="reviews-section">
+        <div class="reviews-container">
+            <h2 class="reviews-title">What Our Customers Say</h2>
+            <div id="reviewsLoading" class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Loading reviews...</p>
+            </div>
+            <div id="reviewsError" class="error-container" style="display: none;">
+                <p>Failed to load reviews. Please try again.</p>
+                <button class="btn btn-primary" onclick="loadReviews()">Retry</button>
+            </div>
+            <div id="reviewsList" class="reviews-grid" style="display: none;">
+                <!-- Reviews will be loaded here -->
+            </div>
+        </div>
+    </section>
+    <!-- end reviews section -->
 
     <!-- start about us section -->
     <footer class="about-us">
@@ -83,5 +122,116 @@
         </div>
     </footer>
     <!-- end about us section -->
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideLoginModal()">&times;</span>
+            <h2>Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email:</label>
+                    <input type="email" id="loginEmail" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password:</label>
+                    <input type="password" id="loginPassword" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+                <p class="modal-footer">
+                    Don't have an account?
+                    <a href="#" onclick="hideLoginModal(); showRegisterModal();">Sign up</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideRegisterModal()">&times;</span>
+            <h2>Sign Up</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerUsername">Username:</label>
+                    <input type="text" id="registerUsername" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email:</label>
+                    <input type="email" id="registerEmail" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password:</label>
+                    <input type="password" id="registerPassword" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPasswordConfirm">Confirm Password:</label>
+                    <input type="password" id="registerPasswordConfirm" name="password_confirm" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign Up</button>
+                <p class="modal-footer">
+                    Already have an account?
+                    <a href="#" onclick="hideRegisterModal(); showLoginModal();">Login</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideCartModal()">&times;</span>
+            <h2>Shopping Cart</h2>
+            <div id="cartItems"></div>
+            <div class="cart-total">
+                <strong>Total: <span id="cartTotal">$0.00</span></strong>
+            </div>
+            <button id="checkoutBtn" class="btn btn-primary" onclick="checkout()">Checkout</button>
+        </div>
+    </div>
+
+    <!-- Reservation Modal -->
+    <div id="reservationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideReservationModal()">&times;</span>
+            <h2>Make a Reservation</h2>
+            <form id="reservationForm">
+                <div class="form-group">
+                    <label for="reservationDate">Date:</label>
+                    <input type="date" id="reservationDate" name="reservation_date" required>
+                </div>
+                <div class="form-group">
+                    <label for="reservationTime">Time:</label>
+                    <input type="time" id="reservationTime" name="reservation_time" required>
+                </div>
+                <div class="form-group">
+                    <label for="partySize">Party Size:</label>
+                    <select id="partySize" name="party_size" required>
+                        <option value="">Select party size</option>
+                        <option value="1">1 person</option>
+                        <option value="2">2 people</option>
+                        <option value="3">3 people</option>
+                        <option value="4">4 people</option>
+                        <option value="5">5 people</option>
+                        <option value="6">6 people</option>
+                        <option value="7">7 people</option>
+                        <option value="8">8 people</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="specialRequests">Special Requests:</label>
+                    <textarea id="specialRequests" name="special_requests" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Make Reservation</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript includes -->
+    <script src="js/error-handler.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/reservations.js"></script>
 </body>
 </html>

@@ -1,0 +1,249 @@
+===============================================================================
+                        RESTAURANT DATABASE SCHEMA GUIDE
+===============================================================================
+
+This document describes the database structure and relationships for the 
+Restaurant Backend API. Understanding these relationships will help frontend 
+developers work with the API responses effectively.
+
+===============================================================================
+                              TABLE RELATIONSHIPS
+===============================================================================
+
+USER (auth_app_user)
+├── OrderHistory (1 user → many orders)
+├── TableReservation (1 user → many reservations)
+└── Review (1 user → many reviews)
+
+MENUITEM (restaurant_server_menuitem)
+└── OrderItem (1 menu item → many order items)
+
+ORDERHISTORY (restaurant_server_orderhistory)
+├── OrderItem (1 order → many order items) [through table]
+├── Review (1 order → 1 review) [optional]
+└── User (many orders → 1 user)
+
+ORDERITEM (restaurant_server_orderitem) [Junction Table]
+├── OrderHistory (many items → 1 order)
+└── MenuItem (many items → 1 menu item)
+
+TABLERESERVATION (restaurant_server_tablereservation)
+└── User (many reservations → 1 user)
+
+REVIEW (restaurant_server_review)
+├── User (many reviews → 1 user)
+└── OrderHistory (1 review → 1 order)
+
+===============================================================================
+                              DETAILED SCHEMA
+===============================================================================
+
+1. USER TABLE (auth_app_user)
+   ┌─────────────────┬──────────────┬─────────────────────────────────────┐
+   │ Field           │ Type         │ Description                         │
+   ├─────────────────┼──────────────┼─────────────────────────────────────┤
+   │ id              │ INTEGER      │ Primary Key (Auto-increment)        │
+   │ username        │ VARCHAR(150) │ Unique username                     │
+   │ email           │ VARCHAR(254) │ Unique email (used for login)       │
+   │ first_name      │ VARCHAR(150) │ User's first name                   │
+   │ last_name       │ VARCHAR(150) │ User's last name                    │
+   │ password        │ VARCHAR(128) │ Hashed password                     │
+   │ is_staff        │ BOOLEAN      │ Admin privileges flag               │
+   │ is_active       │ BOOLEAN      │ Account active status               │
+   │ is_superuser    │ BOOLEAN      │ Superuser privileges flag           │
+   │ date_joined     │ DATETIME     │ Account creation date               │
+   │ date_created    │ DATETIME     │ Custom creation timestamp           │
+   │ last_login      │ DATETIME     │ Last login timestamp                │
+   └─────────────────┴──────────────┴─────────────────────────────────────┘
+
+2. MENU ITEM TABLE (restaurant_server_menuitem)
+   ┌─────────────────┬──────────────┬─────────────────────────────────────┐
+   │ Field           │ Type         │ Description                         │
+   ├─────────────────┼──────────────┼─────────────────────────────────────┤
+   │ id              │ INTEGER      │ Primary Key (Auto-increment)        │
+   │ food_image      │ VARCHAR(100) │ Image file path (nullable)          │
+   │ food_name       │ VARCHAR(100) │ Name of the food item               │
+   │ food_description│ TEXT         │ Detailed description                │
+   │ food_price      │ FLOAT        │ Price (minimum 0.01)                │
+   │ created_at      │ DATETIME     │ Creation timestamp                  │
+   │ updated_at      │ DATETIME     │ Last update timestamp               │
+   │ is_available    │ BOOLEAN      │ Availability status                 │
+   └─────────────────┴──────────────┴─────────────────────────────────────┘
+
+3. ORDER HISTORY TABLE (restaurant_server_orderhistory)
+   ┌─────────────────┬──────────────┬─────────────────────────────────────┐
+   │ Field           │ Type         │ Description                         │
+   ├─────────────────┼──────────────┼─────────────────────────────────────┤
+   │ id              │ INTEGER      │ Primary Key (Auto-increment)        │
+   │ user_id         │ INTEGER      │ Foreign Key → User.id               │
+   │ order_date      │ DATETIME     │ Order creation timestamp            │
+   │ total_amount    │ FLOAT        │ Total order amount                  │
+   │ status          │ VARCHAR(20)  │ Order status (see status values)    │
+   │ special_instruc │ TEXT         │ Special instructions (nullable)     │
+   └─────────────────┴──────────────┴─────────────────────────────────────┘
+   
+   Status Values: 'pending', 'confirmed', 'preparing', 'ready', 'delivered', 'cancelled'
+
+4. ORDER ITEM TABLE (restaurant_server_orderitem) [Junction Table]
+   ┌─────────────────┬──────────────┬─────────────────────────────────────┐
+   │ Field           │ Type         │ Description                         │
+   ├─────────────────┼──────────────┼─────────────────────────────────────┤
+   │ id              │ INTEGER      │ Primary Key (Auto-increment)        │
+   │ order_id        │ INTEGER      │ Foreign Key → OrderHistory.id       │
+   │ menu_item_id    │ INTEGER      │ Foreign Key → MenuItem.id           │
+   │ quantity        │ INTEGER      │ Quantity ordered (minimum 1)        │
+   │ price_at_time   │ FLOAT        │ Price when order was placed         │
+   └─────────────────┴──────────────┴─────────────────────────────────────┘
+
+5. TABLE RESERVATION TABLE (restaurant_server_tablereservation)
+   ┌─────────────────┬──────────────┬─────────────────────────────────────┐
+   │ Field           │ Type         │ Description                         │
+   ├─────────────────┼──────────────┼─────────────────────────────────────┤
+   │ id              │ INTEGER      │ Primary Key (Auto-increment)        │
+   │ user_id         │ INTEGER      │ Foreign Key → User.id               │
+   │ reservation_date│ DATE         │ Reservation date (YYYY-MM-DD)       │
+   │ reservation_time│ TIME         │ Reservation time (HH:MM:SS)         │
+   │ party_size      │ INTEGER      │ Number of people (1-20)             │
+   │ table_number    │ INTEGER      │ Assigned table (nullable)           │
+   │ special_requests│ TEXT         │ Special requests (nullable)         │
+   │ status          │ VARCHAR(20)  │ Reservation status                  │
+   │ created_at      │ DATETIME     │ Creation timestamp                  │
+   └─────────────────┴──────────────┴─────────────────────────────────────┘
+   
+   Status Values: 'pending', 'confirmed', 'seated', 'completed', 'cancelled', 'no_show'
+
+6. REVIEW TABLE (restaurant_server_review)
+   ┌─────────────────┬──────────────┬─────────────────────────────────────┐
+   │ Field           │ Type         │ Description                         │
+   ├─────────────────┼──────────────┼─────────────────────────────────────┤
+   │ id              │ INTEGER      │ Primary Key (Auto-increment)        │
+   │ user_id         │ INTEGER      │ Foreign Key → User.id               │
+   │ order_id        │ INTEGER      │ Foreign Key → OrderHistory.id       │
+   │ stars           │ INTEGER      │ Rating (1-5)                        │
+   │ description     │ TEXT         │ Review text                         │
+   │ created_at      │ DATETIME     │ Creation timestamp                  │
+   │ updated_at      │ DATETIME     │ Last update timestamp               │
+   └─────────────────┴──────────────┴─────────────────────────────────────┘
+
+===============================================================================
+                              API RESPONSE FORMATS
+===============================================================================
+
+When you make API calls, the responses will include nested objects based on 
+these relationships. Here are the typical response formats:
+
+1. USER OBJECT:
+   {
+     "id": 1,
+     "username": "john_doe",
+     "email": "john@example.com",
+     "first_name": "John",
+     "last_name": "Doe",
+     "date_created": "2025-07-06T10:30:00Z"
+   }
+
+2. MENU ITEM OBJECT:
+   {
+     "id": 1,
+     "food_image": "/media/menu_images/pizza.jpg",
+     "food_name": "Margherita Pizza",
+     "food_description": "Classic pizza with fresh tomatoes...",
+     "food_price": 12.99,
+     "created_at": "2025-07-06T10:30:00Z",
+     "updated_at": "2025-07-06T10:30:00Z",
+     "is_available": true
+   }
+
+3. ORDER OBJECT (with nested relationships):
+   {
+     "id": 1,
+     "user": {
+       "id": 1,
+       "username": "john_doe",
+       "email": "john@example.com"
+     },
+     "order_date": "2025-07-06T12:30:00Z",
+     "total_amount": 25.98,
+     "status": "confirmed",
+     "special_instructions": "Extra cheese",
+     "order_items": [
+       {
+         "id": 1,
+         "menu_item": {
+           "id": 1,
+           "food_name": "Margherita Pizza",
+           "food_price": 12.99
+         },
+         "quantity": 2,
+         "price_at_time": 12.99
+       }
+     ]
+   }
+
+4. RESERVATION OBJECT:
+   {
+     "id": 1,
+     "user": {
+       "id": 1,
+       "username": "john_doe"
+     },
+     "reservation_date": "2025-07-15",
+     "reservation_time": "19:30:00",
+     "party_size": 4,
+     "table_number": 5,
+     "special_requests": "Window seat",
+     "status": "confirmed",
+     "created_at": "2025-07-06T10:30:00Z"
+   }
+
+5. REVIEW OBJECT:
+   {
+     "id": 1,
+     "user": {
+       "id": 1,
+       "username": "john_doe"
+     },
+     "order": {
+       "id": 1,
+       "order_date": "2025-07-06T12:30:00Z"
+     },
+     "stars": 5,
+     "description": "Excellent food and service!",
+     "created_at": "2025-07-06T14:30:00Z",
+     "updated_at": "2025-07-06T14:30:00Z"
+   }
+
+===============================================================================
+                              FRONTEND CONSIDERATIONS
+===============================================================================
+
+1. FOREIGN KEY RELATIONSHIPS:
+   - When creating orders, send menu_item_id (not the full menu item object)
+   - When creating reviews, send order_id (not the full order object)
+   - API responses include full nested objects for easy display
+
+2. CALCULATED FIELDS:
+   - total_amount in orders is calculated automatically on the backend
+   - price_at_time preserves the price when the order was placed
+
+3. STATUS FIELDS:
+   - Use status values exactly as specified (case-sensitive)
+   - Frontend should handle all possible status values
+
+4. NULLABLE FIELDS:
+   - food_image, special_instructions, special_requests, table_number
+   - Check for null values before displaying
+
+5. UNIQUE CONSTRAINTS:
+   - Email must be unique across all users
+   - One review per order (order_id is unique in reviews table)
+   - Table reservations: unique combination of date, time, and table_number
+
+6. VALIDATION RULES:
+   - party_size: 1-20 people
+   - stars: 1-5 rating
+   - food_price: minimum 0.01
+   - quantity: minimum 1
+
+This schema ensures data integrity and provides a solid foundation for the 
+restaurant management system.
