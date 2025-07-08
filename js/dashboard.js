@@ -183,10 +183,6 @@ function renderProfileInfo(profile) {
       <div class="info-label">Member Since</div>
       <div class="info-value">${formatDate(profile.date_created)}</div>
     </div>
-    <div class="info-item">
-      <div class="info-label">Account Status</div>
-      <div class="info-value">${profile.is_active ? 'Active' : 'Inactive'}</div>
-    </div>
   `;
 }
 
