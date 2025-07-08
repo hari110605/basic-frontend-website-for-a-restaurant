@@ -161,29 +161,188 @@ async function loadUserProfile() {
 function renderProfileInfo(profile) {
   const profileElement = document.getElementById('profileInfo');
   if (!profileElement) return;
-  
+
   profileElement.innerHTML = `
-    <div class="info-item">
-      <div class="info-label">Username</div>
-      <div class="info-value">${profile.username}</div>
+    <div class="profile-header">
+      <h3>👤 Profile Information</h3>
+      <button class="edit-profile-btn" onclick="showEditProfileModal()">
+        ✏️ Edit Profile
+      </button>
     </div>
-    <div class="info-item">
-      <div class="info-label">Email</div>
-      <div class="info-value">${profile.email}</div>
-    </div>
-    <div class="info-item">
-      <div class="info-label">First Name</div>
-      <div class="info-value">${profile.first_name || 'Not provided'}</div>
-    </div>
-    <div class="info-item">
-      <div class="info-label">Last Name</div>
-      <div class="info-value">${profile.last_name || 'Not provided'}</div>
-    </div>
-    <div class="info-item">
-      <div class="info-label">Member Since</div>
-      <div class="info-value">${formatDate(profile.date_created)}</div>
+
+    <div class="profile-grid">
+      <div class="info-item">
+        <div class="info-label">Username</div>
+        <div class="info-value">${profile.username}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Email</div>
+        <div class="info-value">${profile.email}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">First Name</div>
+        <div class="info-value" id="displayFirstName">${profile.first_name || 'Not provided'}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Last Name</div>
+        <div class="info-value" id="displayLastName">${profile.last_name || 'Not provided'}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Member Since</div>
+        <div class="info-value">${formatDate(profile.date_created)}</div>
+      </div>
     </div>
   `;
+
+  // Store current profile data for editing
+  window.currentUserProfile = profile;
+}
+
+// ===============================================================================
+//                              PROFILE MANAGEMENT
+// ===============================================================================
+
+// Show edit profile modal
+function showEditProfileModal() {
+  const modal = document.getElementById('editProfileModal');
+  if (!modal) return;
+
+  // Pre-fill form with current data
+  const firstNameInput = document.getElementById('editFirstName');
+  const lastNameInput = document.getElementById('editLastName');
+
+  if (window.currentUserProfile) {
+    if (firstNameInput) firstNameInput.value = window.currentUserProfile.first_name || '';
+    if (lastNameInput) lastNameInput.value = window.currentUserProfile.last_name || '';
+  }
+
+  modal.style.display = 'block';
+}
+
+// Hide edit profile modal
+function hideEditProfileModal() {
+  const modal = document.getElementById('editProfileModal');
+  if (modal) {
+    modal.style.display = 'none';
+    clearProfileForm();
+  }
+}
+
+// Clear profile form
+function clearProfileForm() {
+  const form = document.getElementById('editProfileForm');
+  if (form) form.reset();
+}
+
+// Handle profile form submission
+async function handleProfileSubmission(event) {
+  event.preventDefault();
+
+  console.log('Profile submission started');
+
+  const firstNameInput = document.getElementById('editFirstName');
+  const lastNameInput = document.getElementById('editLastName');
+  const submitButton = document.querySelector('#editProfileForm button[type="submit"]');
+
+  if (!firstNameInput || !lastNameInput) {
+    showNotification('Form elements not found', 'error');
+    return;
+  }
+
+  // Check if API is available
+  if (typeof api === 'undefined') {
+    console.error('API instance not found');
+    showNotification('API service not available', 'error');
+    return;
+  }
+
+  const firstName = firstNameInput.value.trim();
+  const lastName = lastNameInput.value.trim();
+
+  // Validation
+  if (!firstName || !lastName) {
+    showNotification('Please fill in both first name and last name', 'warning');
+    return;
+  }
+
+  if (firstName.length < 2 || lastName.length < 2) {
+    showNotification('Names must be at least 2 characters long', 'warning');
+    return;
+  }
+
+  // Disable submit button during request
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.textContent = 'Updating...';
+  }
+
+  try {
+    const profileData = {
+      first_name: firstName,
+      last_name: lastName
+    };
+
+    const response = await api.updateProfile(profileData);
+
+    if (response.success) {
+      // Update stored profile data
+      if (window.currentUserProfile) {
+        window.currentUserProfile.first_name = firstName;
+        window.currentUserProfile.last_name = lastName;
+        window.currentUserProfile.full_name = `${firstName} ${lastName}`;
+      }
+
+      // Update stored user data in localStorage
+      const currentUser = api.getCurrentUser();
+      if (currentUser) {
+        currentUser.first_name = firstName;
+        currentUser.last_name = lastName;
+        currentUser.full_name = `${firstName} ${lastName}`;
+        api.setCurrentUser(currentUser);
+      }
+
+      // Update display
+      updateProfileDisplay(firstName, lastName);
+
+      // Hide modal and show success message
+      hideEditProfileModal();
+      showNotification(response.message || 'Profile updated successfully!', 'success');
+
+    } else {
+      showNotification(response.message || 'Failed to update profile', 'error');
+    }
+
+  } catch (error) {
+    console.error('Profile update error:', error);
+    showNotification('Failed to update profile. Please try again.', 'error');
+  } finally {
+    // Re-enable submit button
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.textContent = 'Save Changes';
+    }
+  }
+}
+
+// Update profile display without full reload
+function updateProfileDisplay(firstName, lastName) {
+  const firstNameDisplay = document.getElementById('displayFirstName');
+  const lastNameDisplay = document.getElementById('displayLastName');
+
+  if (firstNameDisplay) firstNameDisplay.textContent = firstName;
+  if (lastNameDisplay) lastNameDisplay.textContent = lastName;
+
+  // Update user info in header if it exists
+  const currentUser = api.getCurrentUser();
+  if (currentUser && typeof updateUserInfo === 'function') {
+    // Update the stored user object with new names
+    currentUser.first_name = firstName;
+    currentUser.last_name = lastName;
+    currentUser.full_name = `${firstName} ${lastName}`;
+
+    // Update the display
+    updateUserInfo(currentUser);
+  }
 }
 
 // ===============================================================================

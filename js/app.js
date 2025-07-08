@@ -56,9 +56,22 @@ function updateNavigation(isAuthenticated) {
 
 // Update user info display
 function updateUserInfo(user) {
+  // If no user provided, try to get current user
+  if (!user) {
+    user = api && api.getCurrentUser ? api.getCurrentUser() : null;
+  }
+
+  // If still no user, exit gracefully
+  if (!user) {
+    console.warn('No user data available for updateUserInfo');
+    return;
+  }
+
   const userNameElements = document.querySelectorAll('.user-name');
   userNameElements.forEach(element => {
-    element.textContent = user.username || user.email;
+    // Use full_name if available, otherwise fallback to username or email
+    const displayName = user.full_name || user.username || user.email || 'User';
+    element.textContent = displayName;
   });
 }
 

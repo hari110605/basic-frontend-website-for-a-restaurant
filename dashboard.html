@@ -440,12 +440,58 @@
 
         <!-- Profile Tab -->
         <div id="profileTab" class="tab-content">
-            <h2 class="section-title">👤 My Profile</h2>
+            <h2 class="section-title" color="white">👤 My Profile</h2>
             <div class="profile-section">
                 <div id="profileInfo" class="profile-info">
                     <!-- Profile information will be loaded here -->
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideEditProfileModal()">&times;</span>
+            <div class="profile-modal-header">
+                <h2>✏️ Edit Profile</h2>
+                <p>Update your personal information</p>
+            </div>
+
+            <form id="editProfileForm" onsubmit="handleProfileSubmission(event)">
+                <div class="profile-form-group">
+                    <label for="editFirstName">First Name</label>
+                    <input
+                        type="text"
+                        id="editFirstName"
+                        name="first_name"
+                        required
+                        minlength="2"
+                        maxlength="50"
+                        placeholder="Enter your first name"
+                        class="profile-input"
+                    >
+                </div>
+
+                <div class="profile-form-group">
+                    <label for="editLastName">Last Name</label>
+                    <input
+                        type="text"
+                        id="editLastName"
+                        name="last_name"
+                        required
+                        minlength="2"
+                        maxlength="50"
+                        placeholder="Enter your last name"
+                        class="profile-input"
+                    >
+                </div>
+
+                <div class="profile-form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="hideEditProfileModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
         </div>
     </div>
 

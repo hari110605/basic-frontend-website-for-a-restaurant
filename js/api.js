@@ -237,6 +237,41 @@ class RestaurantAPI {
   setCurrentUser(user) {
     localStorage.setItem('current_user', JSON.stringify(user));
   }
+
+  // Update user profile
+  async updateProfile(profileData) {
+    try {
+      const response = await this.apiCall('/profile/update/', {
+        method: 'PATCH',
+        headers: this.getHeaders(),
+        body: JSON.stringify(profileData)
+      });
+
+      // Update stored user data if successful
+      if (response.user) {
+        this.setCurrentUser(response.user);
+      }
+
+      return { success: true, ...response };
+    } catch (error) {
+      console.error('Update profile error:', error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  // Get user profile
+  async getUserProfile() {
+    try {
+      const response = await this.apiCall('/profile/', {
+        method: 'GET',
+        headers: this.getHeaders()
+      });
+      return { success: true, ...response };
+    } catch (error) {
+      console.error('Get profile error:', error);
+      return { success: false, message: error.message };
+    }
+  }
 }
 
 // ===============================================================================
