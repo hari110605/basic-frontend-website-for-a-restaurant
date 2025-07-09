@@ -743,7 +743,7 @@ body {
     text-align: center;
     font-size: 36px;
     font-weight: 700;
-    color: #333;
+    color: #e4514e;
     margin-bottom: 50px;
     position: relative;
 }
@@ -793,17 +793,17 @@ body {
 
 .review-author {
     font-weight: 600;
-    color: #333;
+    color: #faf8f8;
 }
 
 .review-date {
-    color: #666;
+    color: #cecece;
     font-size: 14px;
     margin-left: auto;
 }
 
 .review-text {
-    color: #666;
+    color: #cecece;
     line-height: 1.6;
     font-style: italic;
 }

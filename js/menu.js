@@ -102,12 +102,14 @@ function createMenuItemHTML(item) {
   
   return `
     <div class="menu-card ${!isAvailable ? 'unavailable' : ''}" data-id="${item.id}">
-      <img src="${imageUrl}" alt="${item.food_name}" onerror="handleImageError(this, '${item.food_name}')" loading="lazy">
+      <div class="image-container">
+        <img src="${imageUrl}" alt="${item.food_name}" onerror="handleImageError(this, '${item.food_name}')" loading="lazy">
+      </div>
       <div class="menu-content">
         <h3>${item.food_name}</h3>
         <p>${item.food_description}</p>
         <div class="price">${formatPrice(item.food_price)}</div>
-        ${isAvailable ? 
+        ${isAvailable ?
           `<button class="add-to-cart-btn" onclick="addToCart(${item.id})">
             Add to Cart
           </button>` :
