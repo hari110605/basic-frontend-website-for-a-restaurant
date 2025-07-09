@@ -75,12 +75,12 @@ async function loadUserOrders() {
 function renderOrdersList(orders) {
   const listElement = document.getElementById('ordersList');
   if (!listElement) return;
-  
+
   if (orders.length === 0) {
     listElement.innerHTML = '<p class="no-data">No orders found. <a href="view.html">Browse our menu</a> to place your first order!</p>';
     return;
   }
-  
+
   listElement.innerHTML = orders.map(order => createOrderHTML(order)).join('');
 }
 

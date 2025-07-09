@@ -18,10 +18,17 @@ function setupMobileMenuHandlers() {
     const toggleButton = document.querySelector('.mobile-menu-toggle');
     const navLinks = document.querySelector('.nav-links');
 
-    if (!toggleButton || !navLinks) return;
+    if (!toggleButton || !navLinks) {
+        console.error('Mobile menu elements not found:', { toggleButton, navLinks });
+        return;
+    }
 
     // Toggle button click
-    toggleButton.addEventListener('click', toggleMobileMenu);
+    toggleButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleMobileMenu();
+    });
 
     // Close menu when clicking nav links
     navLinks.addEventListener('click', (e) => {
@@ -67,17 +74,19 @@ function toggleMobileMenu() {
 function openMobileMenu() {
     const toggleButton = document.querySelector('.mobile-menu-toggle');
     const navLinks = document.querySelector('.nav-links');
-    
-    if (!toggleButton || !navLinks) return;
-    
+
+    if (!toggleButton || !navLinks) {
+        return;
+    }
+
     isMobileMenuOpen = true;
     toggleButton.classList.add('active');
     navLinks.classList.add('mobile-open');
     toggleButton.setAttribute('aria-expanded', 'true');
-    
+
     // Prevent body scroll
     document.body.style.overflow = 'hidden';
-    
+
     // Focus management
     const firstLink = navLinks.querySelector('a');
     if (firstLink) {
@@ -89,14 +98,16 @@ function openMobileMenu() {
 function closeMobileMenu() {
     const toggleButton = document.querySelector('.mobile-menu-toggle');
     const navLinks = document.querySelector('.nav-links');
-    
-    if (!toggleButton || !navLinks) return;
-    
+
+    if (!toggleButton || !navLinks) {
+        return;
+    }
+
     isMobileMenuOpen = false;
     toggleButton.classList.remove('active');
     navLinks.classList.remove('mobile-open');
     toggleButton.setAttribute('aria-expanded', 'false');
-    
+
     // Restore body scroll
     document.body.style.overflow = '';
 }
