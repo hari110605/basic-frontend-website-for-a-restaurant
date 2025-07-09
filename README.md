@@ -56,7 +56,7 @@ A modern, responsive frontend for a restaurant web application built with HTML, 
    ```
 
 2. **Start the backend server**
-   Make sure your Django backend is running on `https://hp005-restaurant-server.hf.space`
+   Make sure your Django backend is running on `https://hp005-restaurant-web.hf.space`
 
 3. **Serve the frontend files**
    
@@ -81,7 +81,7 @@ A modern, responsive frontend for a restaurant web application built with HTML, 
 
 The API base URL is configured in `js/api.js`:
 ```javascript
-const API_BASE_URL = 'https://hp005-restaurant-server.hf.space/api';
+const API_BASE_URL = 'https://hp005-restaurant-web.hf.space/api';
 ```
 
 Update this URL if your backend is running on a different address.

@@ -3,7 +3,7 @@
 // ===============================================================================
 
 // Base configuration
-const API_BASE_URL = 'https://hp005-restaurant-server.hf.space/api';
+const API_BASE_URL = 'https://hp005-restaurant-web.hf.space/api';
 
 // ===============================================================================
 //                              API SERVICE CLASS
