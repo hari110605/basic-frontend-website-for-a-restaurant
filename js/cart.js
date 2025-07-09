@@ -147,12 +147,12 @@ function processImageUrl(foodImage) {
       imageUrl = foodImage;
     } else if (foodImage.startsWith('/')) {
       // Absolute path from backend - prepend backend base URL
-      const apiBaseUrl = window.API_BASE_URL || 'http://127.0.0.1:8000/api';
+      const apiBaseUrl = window.API_BASE_URL || 'https://hp005-restaurant-server.hf.space/api';
       const backendBase = apiBaseUrl.replace('/api', '');
       imageUrl = `${backendBase}${foodImage}`;
     } else {
       // Relative path - prepend backend media URL
-      const apiBaseUrl = window.API_BASE_URL || 'http://127.0.0.1:8000/api';
+      const apiBaseUrl = window.API_BASE_URL || 'https://hp005-restaurant-server.hf.space/api';
       const backendBase = apiBaseUrl.replace('/api', '');
       imageUrl = `${backendBase}/media/${foodImage}`;
     }
