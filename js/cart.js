@@ -116,6 +116,69 @@ class ShoppingCart {
 //                              CART UI FUNCTIONS
 // ===============================================================================
 
+// Add item to cart (global function for menu integration)
+function addToCart(itemId) {
+  // Try to get the item from menu if available
+  let item = null;
+
+  // Check if menu items are available (from menu.js)
+  if (typeof window.getMenuItemById === 'function') {
+    item = window.getMenuItemById(itemId);
+  } else if (typeof window.menuItems !== 'undefined') {
+    item = window.menuItems.find(menuItem => menuItem.id === itemId);
+  }
+
+  if (item && item.is_available !== false) {
+    cart.addItem(item, 1);
+  } else if (item && item.is_available === false) {
+    showNotification('This item is currently unavailable', 'warning');
+  } else {
+    console.error('Menu item not found:', itemId);
+    showNotification('Item not found', 'error');
+  }
+}
+
+// Process food image URL (same logic as menu.js)
+function processImageUrl(foodImage) {
+  let imageUrl = 'images/default-food.svg'; // Default fallback
+
+  if (foodImage) {
+    if (foodImage.startsWith('http')) {
+      // Already a full URL
+      imageUrl = foodImage;
+    } else if (foodImage.startsWith('/')) {
+      // Absolute path from backend - prepend backend base URL
+      const apiBaseUrl = window.API_BASE_URL || 'http://127.0.0.1:8000/api';
+      const backendBase = apiBaseUrl.replace('/api', '');
+      imageUrl = `${backendBase}${foodImage}`;
+    } else {
+      // Relative path - prepend backend media URL
+      const apiBaseUrl = window.API_BASE_URL || 'http://127.0.0.1:8000/api';
+      const backendBase = apiBaseUrl.replace('/api', '');
+      imageUrl = `${backendBase}/media/${foodImage}`;
+    }
+  }
+
+  return imageUrl;
+}
+
+// Handle image loading errors in cart
+function handleCartImageError(img, itemName) {
+  console.log(`Cart image failed to load for ${itemName}, using fallback`);
+
+  // Try different fallback strategies
+  if (img.src.includes('default-food.svg')) {
+    // Already using fallback, try a different one
+    img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y4ZjlmYSIvPgogIDxjaXJjbGUgY3g9IjE1MCIgY3k9IjgwIiByPSIyNSIgZmlsbD0iI2U0NTE0ZSIgb3BhY2l0eT0iMC4zIi8+CiAgPHJlY3QgeD0iMTI1IiB5PSIxMTAiIHdpZHRoPSI1MCIgaGVpZ2h0PSIzMCIgcng9IjUiIGZpbGw9IiNlNDUxNGUiIG9wYWNpdHk9IjAuMyIvPgogIDx0ZXh0IHg9IjE1MCIgeT0iMTYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2NjYiPkZvb2QgSW1hZ2U8L3RleHQ+CiAgPHRleHQgeD0iMTUwIiB5PSIxODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiIgZmlsbD0iIzk5OSI+Q29taW5nIFNvb248L3RleHQ+Cjwvc3ZnPg==';
+  } else {
+    // Try the SVG fallback first
+    img.src = 'images/default-food.svg';
+  }
+
+  // Remove any error handlers to prevent infinite loops
+  img.onerror = null;
+}
+
 // Update cart badge in navigation
 function updateCartBadge() {
   const badge = document.querySelector('.cart-badge');
@@ -163,21 +226,26 @@ function updateCartModalContent() {
       specialInstructionsElement.value = '';
     }
   } else {
-    cartItems.innerHTML = cart.getItems().map(item => `
-      <div class="cart-item" data-id="${item.id}">
-        <img src="${item.food_image || 'images/default-food.svg'}" alt="${item.food_name}" class="cart-item-image">
-        <div class="cart-item-details">
-          <h4>${item.food_name}</h4>
-          <p class="cart-item-price">${formatPrice(item.food_price)}</p>
+    cartItems.innerHTML = cart.getItems().map(item => {
+      const imageUrl = processImageUrl(item.food_image);
+      console.log(`Cart item ${item.food_name}: original image = ${item.food_image}, processed = ${imageUrl}`);
+
+      return `
+        <div class="cart-item" data-id="${item.id}">
+          <img src="${imageUrl}" alt="${item.food_name}" class="cart-item-image" onerror="handleCartImageError(this, '${item.food_name}')" loading="lazy">
+          <div class="cart-item-details">
+            <h4>${item.food_name}</h4>
+            <p class="cart-item-price">${formatPrice(item.food_price)}</p>
+          </div>
+          <div class="cart-item-controls">
+            <button class="quantity-btn" onclick="updateCartItemQuantity(${item.id}, ${item.quantity - 1})">-</button>
+            <span class="quantity">${item.quantity}</span>
+            <button class="quantity-btn" onclick="updateCartItemQuantity(${item.id}, ${item.quantity + 1})">+</button>
+            <button class="remove-btn" onclick="removeCartItem(${item.id})">×</button>
+          </div>
         </div>
-        <div class="cart-item-controls">
-          <button class="quantity-btn" onclick="updateCartItemQuantity(${item.id}, ${item.quantity - 1})">-</button>
-          <span class="quantity">${item.quantity}</span>
-          <button class="quantity-btn" onclick="updateCartItemQuantity(${item.id}, ${item.quantity + 1})">+</button>
-          <button class="remove-btn" onclick="removeCartItem(${item.id})">×</button>
-        </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
 
     cartTotal.textContent = formatPrice(cart.getTotal());
     checkoutBtn.disabled = false;
@@ -196,6 +264,14 @@ function removeCartItem(itemId) {
   cart.removeItem(itemId);
   updateCartModalContent();
   updateCartBadge();
+}
+
+// Clear cart (wrapper function for global access)
+function clearCart() {
+  cart.clear();
+  updateCartModalContent();
+  updateCartBadge();
+  showNotification('Cart cleared', 'info');
 }
 
 // Checkout function
@@ -262,3 +338,18 @@ cart.addListener(() => {
 document.addEventListener('DOMContentLoaded', () => {
   updateCartBadge();
 });
+
+// Export cart and functions for global access
+if (typeof window !== 'undefined') {
+  window.cart = cart;
+  window.addToCart = addToCart;
+  window.showCartModal = showCartModal;
+  window.hideCartModal = hideCartModal;
+  window.updateCartItemQuantity = updateCartItemQuantity;
+  window.removeCartItem = removeCartItem;
+  window.clearCart = clearCart;
+  window.checkout = checkout;
+  window.updateCartBadge = updateCartBadge;
+  window.processImageUrl = processImageUrl;
+  window.handleCartImageError = handleCartImageError;
+}

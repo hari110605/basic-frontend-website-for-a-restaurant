@@ -121,12 +121,9 @@ function createMenuItemHTML(item) {
   `;
 }
 
-// Add item to cart
-function addToCart(itemId) {
-  const item = menuItems.find(menuItem => menuItem.id === itemId);
-  if (item && item.is_available !== false) {
-    cart.addItem(item, 1);
-  }
+// Get menu item by ID (for cart integration)
+function getMenuItemById(id) {
+  return menuItems.find(item => item.id === id);
 }
 
 // Search menu items
@@ -230,10 +227,7 @@ function handleImageError(img, itemName) {
   img.onerror = null;
 }
 
-// Get menu item by ID
-function getMenuItemById(id) {
-  return menuItems.find(item => item.id === id);
-}
+
 
 // Initialize menu page
 document.addEventListener('DOMContentLoaded', () => {
@@ -257,9 +251,9 @@ window.addEventListener('load', () => {
 // Export functions for use in other modules
 if (typeof window !== 'undefined') {
   window.loadMenuItems = loadMenuItems;
-  window.addToCart = addToCart;
   window.searchMenuItems = searchMenuItems;
   window.sortMenuItems = sortMenuItems;
   window.getMenuItemById = getMenuItemById;
   window.handleImageError = handleImageError;
+  window.menuItems = menuItems; // Export menu items for cart access
 }
