@@ -69,7 +69,6 @@ async function handleReservation(event) {
     showReservationConfirmation(reservation);
     
   } catch (error) {
-    console.error('Reservation failed:', error);
     showNotification(error.message || 'Failed to create reservation', 'error');
   }
 }
@@ -116,7 +115,6 @@ async function loadUserReservations() {
     const reservations = await api.getUserReservations();
     return reservations;
   } catch (error) {
-    console.error('Failed to load reservations:', error);
     throw error;
   }
 }

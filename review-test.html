@@ -281,11 +281,9 @@
             try {
                 showResult('Loading your orders...', 'info');
                 const orders = await api.getUserOrders();
-                console.log('Loaded orders:', orders);
                 
                 // Filter delivered orders
                 const deliveredOrders = orders.filter(order => order.status === 'delivered');
-                console.log('Delivered orders:', deliveredOrders);
                 
                 displayOrders(deliveredOrders);
                 
@@ -295,7 +293,6 @@
                     showResult(`Found ${deliveredOrders.length} delivered orders`, 'success');
                 }
             } catch (error) {
-                console.error('Failed to load orders:', error);
                 showResult(`Failed to load orders: ${error.message}`, 'error');
             }
         }
@@ -327,7 +324,6 @@
         }
 
         function reviewOrder(orderId, orderInfo) {
-            console.log('reviewOrder called with:', orderId, orderInfo);
             
             // Clear previous widget
             document.getElementById('reviewWidgetContainer').innerHTML = '<div id="reviewWidget"></div>';
@@ -339,7 +335,6 @@
                     orderInfo: orderInfo,
                     showOrderInfo: true,
                     onSuccess: (response) => {
-                        console.log('Review submitted successfully:', response);
                         showResult('Review submitted successfully! Thank you for your feedback.', 'success');
                         
                         // Clear the widget after success
@@ -348,7 +343,6 @@
                         }, 3000);
                     },
                     onError: (error, message) => {
-                        console.error('Review submission failed:', error);
                         showResult(`Review failed: ${message}`, 'error');
                     },
                     onCancel: () => {
@@ -364,7 +358,6 @@
                 });
                 
             } catch (error) {
-                console.error('Failed to create review widget:', error);
                 showResult(`Failed to create review widget: ${error.message}`, 'error');
             }
         }

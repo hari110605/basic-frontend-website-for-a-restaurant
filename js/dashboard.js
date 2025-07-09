@@ -61,9 +61,8 @@ async function loadUserOrders() {
     renderOrdersList(userOrders);
     
     if (loadingElement) loadingElement.style.display = 'none';
-    
+
   } catch (error) {
-    console.error('Failed to load orders:', error);
     if (loadingElement) loadingElement.style.display = 'none';
     if (listElement) {
       listElement.innerHTML = '<p class="no-data">Failed to load orders. Please try again.</p>';
@@ -128,9 +127,8 @@ async function loadUserReservations() {
     renderReservationsList(userReservations, 'reservationsList');
     
     if (loadingElement) loadingElement.style.display = 'none';
-    
+
   } catch (error) {
-    console.error('Failed to load reservations:', error);
     if (loadingElement) loadingElement.style.display = 'none';
     if (listElement) {
       listElement.innerHTML = '<p class="no-data">Failed to load reservations. Please try again.</p>';
@@ -150,9 +148,8 @@ async function loadUserProfile() {
   try {
     const profile = await api.getProfile();
     renderProfileInfo(profile);
-    
+
   } catch (error) {
-    console.error('Failed to load profile:', error);
     profileElement.innerHTML = '<p class="no-data">Failed to load profile information.</p>';
     showNotification('Failed to load profile', 'error');
   }
@@ -238,8 +235,6 @@ function clearProfileForm() {
 async function handleProfileSubmission(event) {
   event.preventDefault();
 
-  console.log('Profile submission started');
-
   const firstNameInput = document.getElementById('editFirstName');
   const lastNameInput = document.getElementById('editLastName');
   const submitButton = document.querySelector('#editProfileForm button[type="submit"]');
@@ -251,7 +246,6 @@ async function handleProfileSubmission(event) {
 
   // Check if API is available
   if (typeof api === 'undefined') {
-    console.error('API instance not found');
     showNotification('API service not available', 'error');
     return;
   }
@@ -313,7 +307,6 @@ async function handleProfileSubmission(event) {
     }
 
   } catch (error) {
-    console.error('Profile update error:', error);
     showNotification('Failed to update profile. Please try again.', 'error');
   } finally {
     // Re-enable submit button
@@ -527,7 +520,6 @@ async function handleReviewSubmission(event) {
 
   } catch (error) {
     // Error handling is done by the addReview function
-    console.error('Review submission failed:', error);
   }
 }
 

@@ -129,9 +129,7 @@ await addReview(123, 5, "Great food and excellent service!");
 // With error handling
 try {
     await addReview(123, 5, "Great food and excellent service!");
-    console.log("Review submitted successfully!");
 } catch (error) {
-    console.error("Failed to submit review:", error.message);
 }
             </div>
             <button class="example-button" onclick="exampleSimpleReview()">Try Simple Review</button>
@@ -168,15 +166,12 @@ addReviewWithModal(123, {
             <div class="code-block">
 await addReview(123, 4, "Good experience overall", {
     onLoading: (isLoading) => {
-        console.log("Loading:", isLoading);
         // Update UI loading state
     },
     onSuccess: (response) => {
-        console.log("Success:", response);
         // Handle success (e.g., refresh data)
     },
     onError: (error, message) => {
-        console.log("Error:", message);
         // Handle error (e.g., show custom message)
     },
     successMessage: "Thank you for your feedback!"
@@ -221,15 +216,12 @@ await addReview(123, 4, "Good experience overall", {
 // Validate review data
 const validation = validateReviewData(123, 5, "Great food!");
 if (validation.isValid) {
-    console.log("Review data is valid");
 } else {
-    console.log("Validation error:", validation.message);
 }
 
 // Check if order can be reviewed
 const order = { id: 123, status: 'delivered', has_review: false };
 if (canReviewOrder(order)) {
-    console.log("Order can be reviewed");
 }
             </div>
             <button class="example-button" onclick="exampleValidation()">Test Validation</button>
@@ -296,19 +288,15 @@ document.getElementById('orderContainer').innerHTML += buttonHTML;
             try {
                 await addReview(124, 4, "Good experience with advanced callbacks", {
                     onLoading: (isLoading) => {
-                        console.log("Loading state:", isLoading);
                     },
                     onSuccess: (response) => {
-                        console.log("Success callback:", response);
                         alert("Review submitted with success callback!");
                     },
                     onError: (error, message) => {
-                        console.log("Error callback:", message);
                     },
                     successMessage: "Thank you for your detailed feedback!"
                 });
             } catch (error) {
-                console.log("Caught error:", error.message);
             }
         }
 
@@ -345,8 +333,6 @@ document.getElementById('orderContainer').innerHTML += buttonHTML;
             const validation1 = validateReviewData(123, 5, "Great food!");
             const validation2 = validateReviewData(123, 0, "Too short");
             
-            console.log("Validation 1:", validation1);
-            console.log("Validation 2:", validation2);
             
             alert(`Validation results:\n1. ${validation1.message}\n2. ${validation2.message}`);
         }

@@ -18,9 +18,7 @@ async function loadAllReviews() {
   const loadingElement = document.getElementById('reviewsLoading');
   const errorElement = document.getElementById('reviewsError');
   const gridElement = document.getElementById('reviewsGrid');
-  
-  console.log('Loading all reviews...');
-  
+
   // Show loading state
   if (loadingElement) loadingElement.style.display = 'block';
   if (errorElement) errorElement.style.display = 'none';
@@ -34,17 +32,14 @@ async function loadAllReviews() {
     
     while (hasMore) {
       const url = `${API_BASE_URL}/reviews/?page=${page}&page_size=50`;
-      console.log(`Fetching reviews page ${page} from:`, url);
-      
+
       const response = await fetch(url);
-      console.log(`Reviews page ${page} response status:`, response.status);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-      
+
       const data = await response.json();
-      console.log(`Reviews page ${page} data:`, data);
       
       // Handle both array response and paginated response
       const pageReviews = Array.isArray(data) ? data : (data.results || []);
@@ -58,8 +53,6 @@ async function loadAllReviews() {
       if (page > 10) break;
     }
     
-    console.log('All reviews loaded:', allReviews);
-    
     // Update statistics
     updateReviewsStats();
     
@@ -69,9 +62,8 @@ async function loadAllReviews() {
     // Show reviews grid
     if (loadingElement) loadingElement.style.display = 'none';
     if (gridElement) gridElement.style.display = 'grid';
-    
+
   } catch (error) {
-    console.error('Failed to load reviews:', error);
     
     // Show error state
     if (loadingElement) loadingElement.style.display = 'none';
@@ -405,8 +397,6 @@ async function loadReviewableOrders() {
   const errorElement = document.getElementById('orderSelectionError');
   const listElement = document.getElementById('ordersList');
 
-  console.log('Loading reviewable orders...');
-
   // Show loading state
   if (loadingElement) loadingElement.style.display = 'block';
   if (errorElement) errorElement.style.display = 'none';
@@ -415,14 +405,11 @@ async function loadReviewableOrders() {
   try {
     // Get user orders
     const orders = await api.getUserOrders();
-    console.log('User orders received:', orders);
 
     // Filter for reviewable orders (delivered and not reviewed)
     reviewableOrders = orders.filter(order =>
       order.status === 'delivered' && !order.has_review
     );
-
-    console.log('Reviewable orders:', reviewableOrders);
 
     renderReviewableOrders();
 
@@ -431,7 +418,6 @@ async function loadReviewableOrders() {
     if (listElement) listElement.style.display = 'block';
 
   } catch (error) {
-    console.error('Failed to load reviewable orders:', error);
 
     // Show error state
     if (loadingElement) loadingElement.style.display = 'none';
@@ -490,14 +476,9 @@ function createSelectableOrderHTML(order) {
 
 // Select order for review
 function selectOrderForReview(orderId) {
-  console.log('selectOrderForReview called with orderId:', orderId);
-  console.log('Available reviewableOrders:', reviewableOrders);
-
   selectedOrderForReview = reviewableOrders.find(order => order.id === orderId);
-  console.log('Selected order:', selectedOrderForReview);
 
   if (!selectedOrderForReview) {
-    console.error('Order not found in reviewableOrders array');
     showNotification('Error selecting order. Please try again.', 'error');
     return;
   }
@@ -528,8 +509,6 @@ function updateSelectOrderButton() {
 
 // Proceed with selected order
 function proceedWithSelectedOrder() {
-  console.log('proceedWithSelectedOrder called, selectedOrderForReview:', selectedOrderForReview);
-
   if (!selectedOrderForReview) {
     showNotification('Please select an order to review', 'warning');
     return;
@@ -554,7 +533,6 @@ function proceedWithSelectedOrder() {
         }
       });
     } catch (error) {
-      console.error('Error with new review widget:', error);
       // Fallback to existing method
       fallbackToOldReview(orderToReview);
     }
@@ -713,7 +691,7 @@ async function handleReviewSubmission(event) {
     });
 
   } catch (error) {
-    console.error('Review submission failed:', error);
+    // Error handling is done by the addReview function
   }
 }
 
@@ -728,8 +706,6 @@ if (typeof window !== 'undefined') {
 
 // Direct review function that bypasses modal selection
 function directReviewOrder(orderId, orderInfo = null) {
-  console.log('directReviewOrder called with:', orderId, orderInfo);
-
   if (!api.isAuthenticated()) {
     showNotification('Please login to submit a review', 'warning');
     return;
@@ -748,7 +724,6 @@ function directReviewOrder(orderId, orderInfo = null) {
         }
       });
     } catch (error) {
-      console.error('Error with review widget:', error);
       showNotification('Error opening review form. Please try again.', 'error');
     }
   } else {

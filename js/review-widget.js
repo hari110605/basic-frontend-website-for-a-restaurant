@@ -44,7 +44,6 @@ class ReviewWidget {
 
   init() {
     if (!this.container) {
-      console.error('Review widget container not found');
       return;
     }
     
@@ -587,7 +586,6 @@ class ReviewWidget {
       }, 2000);
 
     } catch (error) {
-      console.error('Review submission failed:', error);
       const errorMessage = this.getErrorMessage(error);
       this.showErrorMessage(errorMessage);
       

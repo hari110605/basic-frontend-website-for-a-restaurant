@@ -38,7 +38,6 @@ async function addReview(orderId, rating, description, options = {}) {
   };
 
   try {
-    console.log('Submitting review:', reviewData);
     
     // Show loading state if callback provided
     if (options.onLoading) {
@@ -47,7 +46,6 @@ async function addReview(orderId, rating, description, options = {}) {
 
     // Submit review to backend
     const response = await api.createReview(reviewData);
-    console.log('Review submitted successfully:', response);
 
     // Show success notification
     const successMessage = options.successMessage || 'Thank you! Your review has been submitted successfully.';
@@ -63,7 +61,6 @@ async function addReview(orderId, rating, description, options = {}) {
     return response;
 
   } catch (error) {
-    console.error('Failed to submit review:', error);
     
     // Handle specific error cases
     const errorMessage = getReviewErrorMessage(error);

@@ -10,8 +10,6 @@ async function loadMenuItems() {
   const errorElement = document.getElementById('menuError');
   const gridElement = document.getElementById('menuGrid');
 
-  console.log('loadMenuItems called');
-  console.log('Elements:', { loadingElement, errorElement, gridElement });
 
   // Show loading state
   if (loadingElement) loadingElement.style.display = 'block';
@@ -21,25 +19,20 @@ async function loadMenuItems() {
   try {
     // Direct fetch call to test
     const url = `${API_BASE_URL}/menu/`;
-    console.log('Fetching from:', url);
 
     const response = await fetch(url);
-    console.log('Response status:', response.status);
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
-    console.log('Menu data received:', data);
 
     // Handle both array response and object with results
     menuItems = Array.isArray(data) ? data : (data.results || data.data || []);
-    console.log('Processed menu items:', menuItems);
 
     // Log image URLs for debugging
     menuItems.forEach(item => {
-      console.log(`Item: ${item.food_name}, Image: ${item.food_image}, Available: ${item.is_available}`);
     });
 
     renderMenuItems(menuItems);
@@ -49,7 +42,6 @@ async function loadMenuItems() {
     if (gridElement) gridElement.style.display = 'grid';
 
   } catch (error) {
-    console.error('Failed to load menu:', error);
 
     // Show error state
     if (loadingElement) loadingElement.style.display = 'none';
@@ -98,7 +90,6 @@ function createMenuItemHTML(item) {
 
   const isAvailable = item.is_available !== false;
 
-  console.log(`Menu item ${item.food_name}: original image = ${item.food_image}, processed = ${imageUrl}`);
   
   return `
     <div class="menu-card ${!isAvailable ? 'unavailable' : ''}" data-id="${item.id}">
@@ -214,7 +205,6 @@ function initializeMenuFilters() {
 
 // Handle image loading errors
 function handleImageError(img, itemName) {
-  console.log(`Image failed to load for ${itemName}, using fallback`);
 
   // Try different fallback strategies
   if (img.src.includes('default-food.svg')) {

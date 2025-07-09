@@ -4,38 +4,32 @@
 
 // Global error handler for unhandled promise rejections
 window.addEventListener('unhandledrejection', (event) => {
-  console.error('Unhandled promise rejection:', event.reason);
   showNotification('An unexpected error occurred. Please try again.', 'error');
   event.preventDefault();
 });
 
 // Global error handler for JavaScript errors
 window.addEventListener('error', (event) => {
-  console.error('JavaScript error:', event.error);
   showNotification('An unexpected error occurred. Please refresh the page.', 'error');
 });
 
 // Network error handler
 function handleNetworkError(error) {
-  console.error('Network error:', error);
-  
   if (!navigator.onLine) {
     showNotification('No internet connection. Please check your network.', 'error');
     return;
   }
-  
+
   if (error.message.includes('Failed to fetch')) {
     showNotification('Unable to connect to server. Please try again later.', 'error');
     return;
   }
-  
+
   showNotification('Network error occurred. Please try again.', 'error');
 }
 
 // API error handler
 function handleApiError(error, context = '') {
-  console.error(`API error ${context}:`, error);
-  
   // Handle specific error types
   if (error.message.includes('Authentication required')) {
     showNotification('Your session has expired. Please login again.', 'warning');
@@ -117,7 +111,6 @@ class RetryHandler {
         return await operation();
       } catch (error) {
         lastError = error;
-        console.warn(`Attempt ${attempt} failed for ${context}:`, error);
         
         if (attempt < this.maxRetries) {
           await this.wait(this.delay * attempt);

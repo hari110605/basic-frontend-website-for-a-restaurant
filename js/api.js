@@ -183,7 +183,6 @@ class RestaurantAPI {
         // Safety break
         if (page > 20) break;
       } catch (error) {
-        console.error(`Error fetching reviews page ${page}:`, error);
         break;
       }
     }
@@ -219,7 +218,6 @@ class RestaurantAPI {
         reviews
       };
     } catch (error) {
-      console.error('Error getting review stats:', error);
       throw error;
     }
   }
@@ -254,7 +252,6 @@ class RestaurantAPI {
 
       return { success: true, ...response };
     } catch (error) {
-      console.error('Update profile error:', error);
       return { success: false, message: error.message };
     }
   }
@@ -268,7 +265,6 @@ class RestaurantAPI {
       });
       return { success: true, ...response };
     } catch (error) {
-      console.error('Get profile error:', error);
       return { success: false, message: error.message };
     }
   }

@@ -19,7 +19,7 @@ function setupMobileMenuHandlers() {
     const navLinks = document.querySelector('.nav-links');
 
     if (!toggleButton || !navLinks) {
-        console.error('Mobile menu elements not found:', { toggleButton, navLinks });
+
         return;
     }
 

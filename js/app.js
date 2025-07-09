@@ -33,7 +33,6 @@ async function fetchUserProfile() {
     api.setCurrentUser(profile);
     updateUserInfo(profile);
   } catch (error) {
-    console.error('Failed to fetch user profile:', error);
     // Token might be invalid, logout
     api.logout();
     updateNavigation(false);
@@ -63,7 +62,6 @@ function updateUserInfo(user) {
 
   // If still no user, exit gracefully
   if (!user) {
-    console.warn('No user data available for updateUserInfo');
     return;
   }
 
@@ -139,9 +137,8 @@ async function handleLogin(event) {
     updateUserInfo(response.user);
     
     showNotification('Login successful!', 'success');
-    
+
   } catch (error) {
-    console.error('Login failed:', error);
     showNotification(error.message || 'Login failed', 'error');
   }
 }
@@ -173,9 +170,8 @@ async function handleRegister(event) {
     updateUserInfo(response.user);
     
     showNotification('Registration successful!', 'success');
-    
+
   } catch (error) {
-    console.error('Registration failed:', error);
     showNotification(error.message || 'Registration failed', 'error');
   }
 }
@@ -273,8 +269,6 @@ async function loadReviews() {
 
   if (!listElement) return; // Not on a page with reviews
 
-  console.log('Loading reviews...');
-
   // Show loading state
   if (loadingElement) loadingElement.style.display = 'block';
   if (errorElement) errorElement.style.display = 'none';
@@ -283,21 +277,17 @@ async function loadReviews() {
   try {
     // Direct fetch call to test
     const url = `${API_BASE_URL}/reviews/`;
-    console.log('Fetching reviews from:', url);
 
     const response = await fetch(url);
-    console.log('Reviews response status:', response.status);
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
-    console.log('Reviews data received:', data);
 
     // Handle both array response and paginated response
     const reviews = Array.isArray(data) ? data : (data.results || data.data || []);
-    console.log('Processed reviews:', reviews);
 
     renderReviews(reviews);
 
@@ -306,7 +296,6 @@ async function loadReviews() {
     if (listElement) listElement.style.display = 'grid';
 
   } catch (error) {
-    console.error('Failed to load reviews:', error);
 
     // Show error state
     if (loadingElement) loadingElement.style.display = 'none';

@@ -133,7 +133,6 @@ function addToCart(itemId) {
   } else if (item && item.is_available === false) {
     showNotification('This item is currently unavailable', 'warning');
   } else {
-    console.error('Menu item not found:', itemId);
     showNotification('Item not found', 'error');
   }
 }
@@ -164,7 +163,6 @@ function processImageUrl(foodImage) {
 
 // Handle image loading errors in cart
 function handleCartImageError(img, itemName) {
-  console.log(`Cart image failed to load for ${itemName}, using fallback`);
 
   // Try different fallback strategies
   if (img.src.includes('default-food.svg')) {
@@ -228,7 +226,6 @@ function updateCartModalContent() {
   } else {
     cartItems.innerHTML = cart.getItems().map(item => {
       const imageUrl = processImageUrl(item.food_image);
-      console.log(`Cart item ${item.food_name}: original image = ${item.food_image}, processed = ${imageUrl}`);
 
       return `
         <div class="cart-item" data-id="${item.id}">
@@ -321,7 +318,6 @@ async function checkout() {
     }, 2000);
 
   } catch (error) {
-    console.error('Checkout failed:', error);
     showNotification('Failed to place order. Please try again.', 'error');
   }
 }
