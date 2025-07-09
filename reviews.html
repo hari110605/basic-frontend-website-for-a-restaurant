@@ -45,9 +45,9 @@
 
         .reviews-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-            margin-bottom: 50px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: clamp(20px, 4vw, 30px);
+            margin-bottom: clamp(30px, 6vw, 50px);
         }
 
         .stat-card {
@@ -133,9 +133,9 @@
 
         .reviews-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: clamp(20px, 4vw, 30px);
+            margin-bottom: clamp(30px, 5vw, 40px);
         }
 
         .review-card {
@@ -428,6 +428,20 @@
             color: #e4514e;
         }
 
+        /* Large screens optimization */
+        @media (min-width: 1200px) {
+            .reviews-container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 50px 20px;
+            }
+
+            .reviews-grid {
+                grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+                gap: 35px;
+            }
+        }
+
         /* Tablet Responsive */
         @media (max-width: 991px) {
             .reviews-container {
@@ -439,12 +453,12 @@
             }
 
             .reviews-stats {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
                 gap: 20px;
             }
 
             .reviews-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
                 gap: 25px;
             }
         }

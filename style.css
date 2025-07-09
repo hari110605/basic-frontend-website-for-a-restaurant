@@ -1123,17 +1123,18 @@ body {
 
 .modal-content {
     background: linear-gradient(135deg, #ffffff, #fafbfc);
-    margin: 2% auto;
-    padding: 40px;
-    border-radius: 25px;
-    width: 90%;
-    max-width: 600px;
+    margin: clamp(2%, 5vh, 5%) auto;
+    padding: clamp(20px, 5vw, 40px);
+    border-radius: clamp(15px, 3vw, 25px);
+    width: clamp(300px, 90vw, 600px);
+    max-width: 95vw;
     position: relative;
     animation: modalSlideIn 0.4s ease-out;
     box-shadow: 0 30px 100px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.2);
     border: 2px solid rgba(228, 81, 78, 0.1);
     max-height: 90vh;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 @keyframes modalSlideIn {
@@ -1150,20 +1151,23 @@ body {
 .close {
     color: #bdc3c7;
     float: right;
-    font-size: 32px;
+    font-size: clamp(24px, 4vw, 32px);
     font-weight: bold;
     cursor: pointer;
     position: absolute;
-    top: 15px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
+    top: clamp(10px, 2vw, 15px);
+    right: clamp(15px, 3vw, 20px);
+    width: clamp(36px, 8vw, 44px);
+    height: clamp(36px, 8vw, 44px);
+    min-width: 44px;
+    min-height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
     transition: all 0.3s ease;
     background: rgba(255, 255, 255, 0.1);
+    touch-action: manipulation;
 }
 
 .close:hover {
@@ -1173,26 +1177,29 @@ body {
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: clamp(15px, 3vw, 20px);
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: clamp(5px, 1vw, 8px);
     font-weight: 600;
     color: #f9f7f7;
+    font-size: clamp(14px, 2.5vw, 16px);
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
     width: 100%;
-    padding: 12px;
+    padding: clamp(10px, 2.5vw, 15px);
     border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: border-color 0.3s ease;
+    border-radius: clamp(6px, 1.5vw, 10px);
+    font-size: 16px; /* Fixed at 16px to prevent zoom on iOS */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
     box-sizing: border-box;
+    min-height: 44px; /* Minimum touch target size */
+    touch-action: manipulation;
 }
 
 .form-group input:focus,
@@ -1200,6 +1207,16 @@ body {
 .form-group textarea:focus {
     outline: none;
     border-color: #e4514e;
+    box-shadow: 0 0 0 3px rgba(228, 81, 78, 0.1);
+    transform: translateY(-1px);
+}
+
+/* Enhanced focus for keyboard navigation */
+.form-group input:focus-visible,
+.form-group select:focus-visible,
+.form-group textarea:focus-visible {
+    outline: 2px solid #e4514e;
+    outline-offset: 2px;
 }
 
 .modal-footer {
@@ -1585,10 +1602,14 @@ body {
 
 .search-input {
     border: none;
-    padding: 12px 20px;
-    font-size: 16px;
+    padding: clamp(10px, 2.5vw, 15px) clamp(15px, 3vw, 20px);
+    font-size: 16px; /* Fixed to prevent zoom on iOS */
     outline: none;
-    min-width: 250px;
+    min-width: clamp(200px, 40vw, 250px);
+    min-height: 44px; /* Touch target size */
+    flex: 1;
+    background: transparent;
+    touch-action: manipulation;
 }
 
 .search-btn {
@@ -1605,18 +1626,26 @@ body {
 }
 
 .filter-select {
-    padding: 12px 20px;
+    padding: clamp(10px, 2.5vw, 15px) clamp(15px, 3vw, 20px);
     border: 2px solid #e0e0e0;
-    border-radius: 25px;
-    font-size: 16px;
+    border-radius: clamp(15px, 3vw, 25px);
+    font-size: 16px; /* Fixed to prevent zoom on iOS */
     background: white;
     cursor: pointer;
     outline: none;
-    transition: border-color 0.3s ease;
+    min-height: 44px; /* Touch target size */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    touch-action: manipulation;
 }
 
 .filter-select:focus {
     border-color: #e4514e;
+    box-shadow: 0 0 0 3px rgba(228, 81, 78, 0.1);
+}
+
+.filter-select:focus-visible {
+    outline: 2px solid #e4514e;
+    outline-offset: 2px;
 }
 
 /* --- Menu Item States --- */
@@ -2399,10 +2428,7 @@ body {
         padding: 0 12px;
     }
 
-    .modal-content {
-        width: 85%;
-        max-width: 500px;
-    }
+
 
     .reviews-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -2452,11 +2478,7 @@ body {
         gap: 20px;
     }
 
-    .modal-content {
-        width: 90%;
-        margin: 5% auto;
-        padding: 25px;
-    }
+
 
     .reviews-grid {
         grid-template-columns: 1fr;
@@ -2577,13 +2599,7 @@ body {
         gap: 5px;
     }
 
-    /* Modal responsive */
-    .modal-content {
-        margin: 10% auto;
-        padding: 20px;
-        width: 95%;
-        max-width: 400px;
-    }
+
 
     .form-group input,
     .form-group select,
@@ -2697,17 +2713,10 @@ body {
         font-size: 14px;
     }
 
-    /* Modals */
-    .modal-content {
-        margin: 2% auto;
-        padding: 15px;
-        width: 95%;
-        max-width: 350px;
-    }
-
+    /* Modal headings responsive */
     .modal-content h2 {
-        font-size: 20px;
-        margin-bottom: 15px;
+        font-size: clamp(18px, 4vw, 24px);
+        margin-bottom: clamp(12px, 3vw, 20px);
     }
 
     /* Forms */
@@ -3080,10 +3089,7 @@ a:focus {
         font-size: 28px;
     }
 
-    .modal-content {
-        max-height: 90vh;
-        overflow-y: auto;
-    }
+
 }
 
 /* Print styles */
